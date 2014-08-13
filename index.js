@@ -9,21 +9,21 @@ var ObservStruct = require('observ-struct');
 
 function Person (options) {
 
-  var events = input(['name', 'email', 'bio']);
+  var events = input([' name', 'email', 'bio']);
 
   // setup state
   var state = ObservStruct({
     person: ObservStruct({
-      aName: Observ(options.person.name),
+      " name": Observ(options.person.name),
       email: Observ(options.person.email),
       bio: Observ(options.person.bio),
     }),
     events: events,
   });
 
-  events.name(function (data) {
+  events[" name"](function (data) {
     debug("name", data);
-    state.person.name.set(data.name);
+    state.person[" name"].set(data.name);
   });
 
   events.email(function (data) {
@@ -41,30 +41,27 @@ function Person (options) {
   return { state: state, events: events };
 }
 
+Person.properties = [" name", "email", "bio"];
+
+Person.renderProperty = function (name, state, event) {
+  return h('div.property', {}, [
+    h('label', {}, name),
+    h('input', {
+      type: "text",
+      name: name,
+      value: state,
+      'ev-event': changeEvent(event),
+    }),
+  ]);
+}
+
 Person.render = function (state, events) {
   debug("render", state, events);
 
   return h('div.ui.person', {}, [
-    h('div.properties', {}, [
-      h('input', {
-        type: "text",
-        name: "name",
-        value: state.person.aName,
-        'ev-event': changeEvent(state.events.name),
-      }),
-      h('input', {
-        type: "text",
-        name: "name",
-        value: state.person.email,
-        'ev-event': changeEvent(state.events.name),
-      }),
-      h('input', {
-        type: "text",
-        name: "name",
-        value: state.person.bio,
-        'ev-event': changeEvent(state.events.name),
-      }),
-    ]),
+    h('div.properties', {}, Person.properties.map(function (propName) {
+      return Person.renderProperty(propName, state.person[propName], state.events[propName]);
+    })),
   ])
   ;
 }
