@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/ahdinosaur/person-ui.git"
+    "url": "git://github.com/openappjs/person-ui.git"
   },
-  "author": "ahdinosaur",
+  "author": "openappjs",
   "license": "AGPLv3",
   "bugs": {
-    "url": "https://github.com/ahdinosaur/person-ui/issues"
+    "url": "https://github.com/openappjs/person-ui/issues"
   },
-  "homepage": "https://github.com/ahdinosaur/person-ui",
+  "homepage": "https://github.com/openappjs/person-ui",
   "dependencies": {
     "debug": "^1.0.4",
     "geval": "^2.1.1",
