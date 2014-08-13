@@ -50,14 +50,14 @@ Person.properties = ["name", "email", "bio"];
 
 Person.changeProperty = function (propName, state) {
   return function (data) {
-    debug("change", name, ":", data);
+    debug("change", propName, ":", data);
     state.entity["prop-",propName].set(data[name]);
   };
 };
 
 Person.toggleEditProperty = function (propName, state) {
   return function (data) {
-    debug("change", name, ":", data);
+    debug("change", propName, ":", data);
     state.editing["prop-"+propName].set(!state.editing["prop-"+propName]());
   };
 };
