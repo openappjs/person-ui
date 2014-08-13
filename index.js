@@ -17,9 +17,9 @@ function Person (options) {
 
   Person.properties.forEach(function (propName) {
     entityStruct["prop-"+propName] = Observ(options.person[propName]);
-    eventNames.push(propName + "Change");
+    eventNames.push("change-"+propName);
     editingStruct["prop-"+propName] = Observ(false);
-    eventNames.push(propName + "ToggleEdit");
+    eventNames.push("toggleEdit-"+propName);
   })
 
   var events = Input(eventNames);
@@ -33,10 +33,10 @@ function Person (options) {
 
   // define events
   Person.properties.forEach(function (propName) {
-    events[propName + "Change"](
+    events["change-"+propName](
       Person.changeProperty(propName, state)
     );
-    events[propName + "ToggleEdit"](
+    events["toggleEdit-"+propName](
       Person.toggleEditProperty(propName, state)
     );
   })
@@ -70,8 +70,8 @@ Person.renderProperty = function (propName, state, events) {
       name: propName,
       value: state.entity["prop-"+propName],
       readOnly: !state.editing["prop-"+propName],
-      'ev-click': Event(events[propName + "ToggleEdit"]),
-      'ev-event': ChangeEvent(events[propName + "Change"]),
+      'ev-click': Event(events["toggleEdit-"+propName]),
+      'ev-event': ChangeEvent(events["change-"+propName]),
     }),
   ]);
 }
