@@ -10,62 +10,55 @@ var ObservStruct = require('observ-struct');
 function Person (options) {
 
 
+  // setup property state and events
   var eventNames = [];
+  var entityStruct = {};
+  var editingStruct = {};
+
   Person.properties.forEach(function (propName) {
+    entityStruct["prop-"+propName] = Observ(options.person[propName]);
     eventNames.push(propName + "Change");
+    editingStruct["prop-"+propName] = Observ(false);
     eventNames.push(propName + "ToggleEdit");
   })
 
   var events = Input(eventNames);
 
-  // setup state
+  // create state
   var state = ObservStruct({
-    entity: ObservStruct({
-      " name": Observ(options.person.name),
-      email: Observ(options.person.email),
-      bio: Observ(options.person.bio),
-    }),
-    editing: ObservStruct({
-      " name": Observ(false),
-      email: Observ(false),
-      bio: Observ(false),
-    }),
+    entity: ObservStruct(entityStruct),
+    editing: ObservStruct(editingStruct),
     events: events,
   });
 
+  // define events
   Person.properties.forEach(function (propName) {
     events[propName + "Change"](
-      Person.changeProperty(
-        propName,
-        state.entity[propName]
-      )
+      Person.changeProperty(propName, state)
     );
     events[propName + "ToggleEdit"](
-      Person.toggleEditProperty(
-        propName,
-        state.editing[propName]
-      )
+      Person.toggleEditProperty(propName, state)
     );
   })
 
-  debug("setup", state);
+  debug("setup", state());
 
   return { state: state, events: events };
 }
 
-Person.properties = [" name", "email", "bio"];
+Person.properties = ["name", "email", "bio"];
 
-Person.changeProperty = function (name, state) {
+Person.changeProperty = function (propName, state) {
   return function (data) {
     debug("change", name, ":", data);
-    state.set(data[name]);
+    state.entity["prop-",propName].set(data[name]);
   };
 };
 
-Person.toggleEditProperty = function (name, state) {
+Person.toggleEditProperty = function (propName, state) {
   return function (data) {
     debug("change", name, ":", data);
-    state.set(!state());
+    state.editing["prop-"+propName].set(!state.editing["prop-"+propName]());
   };
 };
 
@@ -75,8 +68,8 @@ Person.renderProperty = function (propName, state, events) {
     h('input', {
       type: "text",
       name: propName,
-      value: state.entity[propName],
-      readOnly: !state.editing[propName],
+      value: state.entity["prop-"+propName],
+      readOnly: !state.editing["prop-"+propName],
       'ev-click': Event(events[propName + "ToggleEdit"]),
       'ev-event': ChangeEvent(events[propName + "Change"]),
     }),
