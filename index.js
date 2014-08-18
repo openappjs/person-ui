@@ -51,7 +51,7 @@ Person.properties = ["name", "email", "bio"];
 Person.changeProperty = function (propName, state) {
   return function (data) {
     debug("changeProperty", propName, ":", data);
-    state.entity["prop-",propName].set(data[name]);
+    state.entity["prop-"+propName].set(data[name]);
   };
 };
 
