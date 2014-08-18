@@ -1,14 +1,8 @@
 var debug = require('debug')('person-ui');
-var h = require('virtual-hyperscript');
-var Input = require('geval/multiple');
-var Event = require('value-event/event')
-var ValueEvent = require('value-event/value');
-var ChangeEvent = require('value-event/change');
-var Observ = require('observ');
-var ObservStruct = require('observ-struct');
+var mercury = require('mercury');
+var h = mercury.h;
 
 function Person (options) {
-
 
   // setup property state and events
   var eventNames = [];
@@ -16,18 +10,18 @@ function Person (options) {
   var editingStruct = {};
 
   Person.properties.forEach(function (propName) {
-    entityStruct["prop-"+propName] = Observ(options.person[propName]);
+    entityStruct["prop-"+propName] = mercury.value(options.person[propName]);
     eventNames.push("change-"+propName);
-    editingStruct["prop-"+propName] = Observ(false);
+    editingStruct["prop-"+propName] = mercury.value(false);
     eventNames.push("toggleEdit-"+propName);
   })
 
-  var events = Input(eventNames);
+  var events = mercury.input(eventNames);
 
   // create state
-  var state = ObservStruct({
-    entity: ObservStruct(entityStruct),
-    editing: ObservStruct(editingStruct),
+  var state = mercury.struct({
+    entity: mercury.struct(entityStruct),
+    editing: mercury.struct(editingStruct),
     events: events,
   });
 
@@ -70,8 +64,8 @@ Person.renderProperty = function (propName, state, events) {
       name: propName,
       value: state.entity["prop-"+propName],
       readOnly: !state.editing["prop-"+propName],
-      'ev-click': Event(events["toggleEdit-"+propName]),
-      'ev-event': ChangeEvent(events["change-"+propName]),
+      'ev-click': mercury.event(events["toggleEdit-"+propName]),
+      'ev-event': mercury.changeEvent(events["change-"+propName]),
     }),
   ]);
 }

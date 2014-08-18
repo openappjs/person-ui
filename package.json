@@ -19,12 +19,7 @@
   "homepage": "https://github.com/openappjs/person-ui",
   "dependencies": {
     "debug": "^1.0.4",
-    "geval": "^2.1.1",
-    "mercury": "^6.0.1",
-    "observ": "^0.2.0",
-    "observ-struct": "^5.0.1",
-    "value-event": "^2.2.1",
-    "virtual-hyperscript": "^4.4.0"
+    "mercury": "^6.0.1"
   },
   "devDependencies": {
     "beefy": "^2.1.0",
