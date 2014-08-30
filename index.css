@@ -1,4 +1,26 @@
-.ui.person {
+/* base */
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #777777;
 }
-.ui.person > .properties {
+
+img {
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  vertical-align: middle;
+  border: 0;
+}
+
+input[type=text] {
+    font-size: 17px;
+    color: #777777;
+}
+
+/* module */
+
+.ui.person {
+  background-color: #fff;
+  border: 1px solid #ddd;
 }
