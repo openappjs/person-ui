@@ -23,6 +23,7 @@ function Person (options) {
     entity: mercury.struct(entityStruct),
     editing: mercury.struct(editingStruct),
     events: events,
+    render: mercury.value(Person.render),
   });
 
   // define events
