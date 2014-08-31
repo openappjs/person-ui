@@ -10,7 +10,7 @@ function Person (options) {
   var editingStruct = {};
 
   Person.properties.forEach(function (propName) {
-    entityStruct["prop-"+propName] = mercury.value(options.person[propName]);
+    entityStruct["prop-"+propName] = mercury.value(options.model[propName]);
     eventNames.push("change-"+propName);
     editingStruct["prop-"+propName] = mercury.value(false);
     eventNames.push("toggleEdit-"+propName);
