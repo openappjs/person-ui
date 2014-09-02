@@ -3,7 +3,7 @@ var mercury = require('mercury');
 var Person = require('../');
 
 var person = Person({
-  person: {
+  model: {
     name: "Mikey Williams",
     email: "dinosaur@example.com",
     bio: "a human from planet earth",
