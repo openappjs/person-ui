@@ -1,7 +1,8 @@
 var mercury = require('mercury');
-
 var Person = require('../');
 var fs = require('fs');
+
+require('../index.css');
 
 var person = Person({
   model: {
@@ -13,3 +14,4 @@ var person = Person({
 });
 
 mercury.app(document.body, person.state, Person.render);
+
