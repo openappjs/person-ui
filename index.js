@@ -11,10 +11,12 @@ function Person (options) {
 
   Person.properties.forEach(function (propName) {
     entityStruct["prop-"+propName] = mercury.value(options.model[propName]);
-    eventNames.push("change-"+propName);
-    editingStruct["prop-"+propName] = mercury.value(false);
-    eventNames.push("toggleEdit-"+propName);
-  })
+    if (propName !== 'image') {
+      eventNames.push("change-"+propName);
+      editingStruct["prop-"+propName] = mercury.value(false);
+      eventNames.push("toggleEdit-"+propName);
+    }
+  });
 
   var events = mercury.input(eventNames);
 
@@ -28,12 +30,14 @@ function Person (options) {
 
   // define events
   Person.properties.forEach(function (propName) {
-    events["change-"+propName](
-      Person.changeProperty(propName, state)
-    );
-    events["toggleEdit-"+propName](
-      Person.toggleEditProperty(propName, state)
-    );
+    if (propName !== 'image' ) {
+      events["change-"+propName](
+        Person.changeProperty(propName, state)
+      );
+      events["toggleEdit-"+propName](
+        Person.toggleEditProperty(propName, state)
+      );
+    }
   })
 
   debug("setup", state());
@@ -41,7 +45,7 @@ function Person (options) {
   return { state: state, events: events };
 }
 
-Person.properties = ["name", "email", "bio"];
+Person.properties = ["name", "email", "bio", "image"];
 
 Person.changeProperty = function (propName, state) {
   return function (data) {
@@ -69,14 +73,24 @@ Person.renderProperty = function (propName, state, events) {
       'ev-event': mercury.changeEvent(events["change-"+propName]),
     }),
   ]);
-}
+};
+
+Person.renderImage = function (state, events) {
+  return h('img', {
+    src: state.entity['prop-image']
+  })
+};
 
 Person.render = function (state, events) {
   debug("render", state, events);
 
-  return h('div.ui.person', {}, [
-    h('div.properties', {}, Person.properties.map(function (propName) {
-      return Person.renderProperty(propName, state, state.events);
+  return h('div.ui.person', {
+  }, [
+    h('div.image', {
+    }, Person.renderImage(state, events)),
+    h('div.properties', {
+    }, Person.properties.map(function (propName) {
+      if (propName !== 'image') { return Person.renderProperty(propName, state, state.events); }
     })),
   ])
   ;

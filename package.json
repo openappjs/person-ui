@@ -10,6 +10,7 @@
   "browserify": {
     "transform": [
       "cssify",
+      "brfs",
       "envify"
     ]
   },
@@ -24,6 +25,7 @@
   },
   "homepage": "https://github.com/openappjs/person-ui",
   "dependencies": {
+    "brfs": "^1.2.0",
     "debug": "^1.0.4",
     "mercury": "^6.0.1"
   },
