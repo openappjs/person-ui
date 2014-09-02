@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "example": "beefy -p 5000 example/app.js",
-    "test": "mocha --recursive test"
+    "test": "node test/index.js"
   },
   "browserify": {
     "transform": [
@@ -33,5 +33,9 @@
   },
   "devDependencies": {
     "beefy": "^2.1.0",
+    "global": "^4.2.1",
+    "isarray": "0.0.1",
+    "raf": "^2.0.3",
+    "tape": "^2.14.0"
   }
 }
