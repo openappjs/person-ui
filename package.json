@@ -26,12 +26,12 @@
   "homepage": "https://github.com/openappjs/person-ui",
   "dependencies": {
     "brfs": "^1.2.0",
+    "cssify": "^0.5.1",
     "debug": "^1.0.4",
+    "envify": "^2.0.1",
     "mercury": "^6.0.1"
   },
   "devDependencies": {
     "beefy": "^2.1.0",
-    "cssify": "^0.5.1",
-    "envify": "^2.0.1"
   }
 }
