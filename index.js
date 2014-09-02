@@ -11,15 +11,19 @@ function Person (options) {
 
   Person.properties.forEach(function (propName) {
     entityStruct["prop-"+propName] = mercury.value(options.model[propName]);
-    eventNames.push("change-"+propName);
-    editingStruct["prop-"+propName] = mercury.value(false);
-    eventNames.push("toggleEdit-"+propName);
-  })
+    if (propName !== 'image') {
+      eventNames.push("change-"+propName);
+      editingStruct["prop-"+propName] = mercury.value(false);
+      eventNames.push("toggleEdit-"+propName);
+    }
+  });
 
   var events = mercury.input(eventNames);
 
   // create state
   var state = mercury.struct({
+    //TODO select config from multiple options logic
+    config: mercury.struct(require('./styles/listItemMobile')),
     entity: mercury.struct(entityStruct),
     editing: mercury.struct(editingStruct),
     events: events,
@@ -28,12 +32,14 @@ function Person (options) {
 
   // define events
   Person.properties.forEach(function (propName) {
-    events["change-"+propName](
-      Person.changeProperty(propName, state)
-    );
-    events["toggleEdit-"+propName](
-      Person.toggleEditProperty(propName, state)
-    );
+    if (propName !== 'image' ) {
+      events["change-"+propName](
+        Person.changeProperty(propName, state)
+      );
+      events["toggleEdit-"+propName](
+        Person.toggleEditProperty(propName, state)
+      );
+    }
   })
 
   debug("setup", state());
@@ -41,7 +47,7 @@ function Person (options) {
   return { state: state, events: events };
 }
 
-Person.properties = ["name", "email", "bio"];
+Person.properties = ["name", "email", "bio", "image"];
 
 Person.changeProperty = function (propName, state) {
   return function (data) {
@@ -58,28 +64,46 @@ Person.toggleEditProperty = function (propName, state) {
 };
 
 Person.renderProperty = function (propName, state, events) {
-  return h('div.property', {}, [
-    h('label', {}, propName),
+  var readOnly = !state.editing["prop-"+propName];
+
+  return h('div.property.prop-'+propName, {}, [
+    h('label', {
+      style: state.config.person.properties.label.style
+    }, propName),
     h('input', {
       type: "text",
       name: propName,
       value: state.entity["prop-"+propName],
-      readOnly: !state.editing["prop-"+propName],
+      readOnly: readOnly,
+      style: state.config.person.properties.input.style(propName, readOnly),
       'ev-click': mercury.event(events["toggleEdit-"+propName]),
       'ev-event': mercury.changeEvent(events["change-"+propName]),
     }),
   ]);
-}
+};
+
+Person.renderImage = function (state, events) {
+  return h('img', {
+    src: state.entity['prop-image']
+  })
+};
 
 Person.render = function (state, events) {
   debug("render", state, events);
 
-  return h('div.ui.person', {}, [
-    h('div.properties', {}, Person.properties.map(function (propName) {
-      return Person.renderProperty(propName, state, state.events);
+  return h('div.ui.person', {
+    style: state.config.person.style
+  }, [
+    h('div.image', {
+      style: state.config.person.image.style
+    }, Person.renderImage(state, events)),
+    h('div.properties', {
+      style: state.config.person.properties.style
+    }, Person.properties.map(function (propName) {
+      if (propName !== 'image') { return Person.renderProperty(propName, state, state.events); }
     })),
   ])
   ;
-}
+};
 
 module.exports = Person;
