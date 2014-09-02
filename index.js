@@ -3,14 +3,17 @@ var mercury = require('mercury');
 var h = mercury.h;
 
 function Person (options) {
-
+  options = options || {};
+  var style = options.style || {};
+  var config = options.config || {};
+  var model = options.model || {};
   // setup property state and events
   var eventNames = [];
   var entityStruct = {};
   var editingStruct = {};
 
   Person.properties.forEach(function (propName) {
-    entityStruct["prop-"+propName] = mercury.value(options.model[propName]);
+    entityStruct["prop-"+propName] = mercury.value(model[propName]);
     if (propName !== 'image') {
       eventNames.push("change-"+propName);
       editingStruct["prop-"+propName] = mercury.value(false);
@@ -22,8 +25,10 @@ function Person (options) {
 
   // create state
   var state = mercury.struct({
-    //TODO select config from multiple options logic
-    config: mercury.struct(require('./styles/listItemMobile')),
+    //TODO select style/config from multiple options logic
+    commands: mercury.array(model.commands),
+    config: mercury.struct(config),
+    style: mercury.struct(require('./styles/listItemMobile')),
     entity: mercury.struct(entityStruct),
     editing: mercury.struct(editingStruct),
     events: events,
@@ -68,14 +73,14 @@ Person.renderProperty = function (propName, state, events) {
 
   return h('div.property.prop-'+propName, {}, [
     h('label', {
-      style: state.config.person.properties.label.style
+      style: state.style.person.properties.label.style
     }, propName),
     h('input', {
       type: "text",
       name: propName,
       value: state.entity["prop-"+propName],
       readOnly: readOnly,
-      style: state.config.person.properties.input.style(propName, readOnly),
+      style: state.style.person.properties.input.style(propName, readOnly),
       'ev-click': mercury.event(events["toggleEdit-"+propName]),
       'ev-event': mercury.changeEvent(events["change-"+propName]),
     }),
@@ -91,16 +96,32 @@ Person.renderImage = function (state, events) {
 Person.render = function (state, events) {
   debug("render", state, events);
 
+  var commands = [];
+
+  for (var i = 0; i < state.commands.length; i++) {
+    var command = state.commands[i];
+    if (typeof command !== 'undefined') {
+      commands.push(
+        command && command.render && command.render(command) || stringify(command)
+      );
+    }
+  }
+
   return h('div.ui.person', {
-    style: state.config.person.style
+    style: state.style.person.style
   }, [
     h('div.image', {
-      style: state.config.person.image.style
+      style: state.style.person.image.style
     }, Person.renderImage(state, events)),
     h('div.properties', {
-      style: state.config.person.properties.style
+      style: state.style.person.properties.style
     }, Person.properties.map(function (propName) {
       if (propName !== 'image') { return Person.renderProperty(propName, state, state.events); }
+    })),
+    h('div.commands', {
+      style: state.style.person.commands.style
+    }, commands.map(function (command) {
+      return h('.command', {}, command)
     })),
   ])
   ;

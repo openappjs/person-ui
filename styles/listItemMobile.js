@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 function inputStyle(propName, readOnly) {
   var displayed = {
   'position': 'absolute',
