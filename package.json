@@ -27,10 +27,12 @@
   "homepage": "https://github.com/openappjs/person-ui",
   "dependencies": {
     "brfs": "^1.2.0",
+    "check-nested": "0.0.3",
     "css-face-string": "0.0.2",
     "debug": "^1.0.4",
     "font-awesome": "^4.2.0",
     "global": "^4.2.1",
+    "insert-css": "^0.2.0",
     "isarray": "0.0.1",
     "mercury": "^6.0.1",
     "raf": "^2.0.3",
