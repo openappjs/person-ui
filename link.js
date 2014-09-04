@@ -4,14 +4,12 @@ var h = mercury.h;
 
 var Link = function (options) {
   options = options || {};
-  var style = options.style || {};
   var config = options.config || {};
   var model = options.model || {};
 
   var state = mercury.struct({
     config: mercury.struct(config),
     model: mercury.struct(model),
-    style: mercury.struct(style),
     render: mercury.value(Link.render)
   });
 
@@ -22,7 +20,7 @@ var Link = function (options) {
 Link.render = function (state, events) {
   var content = state.model.content;
 
-  console.log('content in link', state.model.content)
+  console.log('content in link', content)
 
   var recurse = function(content) {
     if (content && content.render) {
@@ -31,8 +29,11 @@ Link.render = function (state, events) {
     return content;
   };
 
+
+
   return h('a', {
-    style: state.style,
+    className: state.config.className,
+    style: state.config.style,
     href: state.model.href,
   }, recurse(content));
 

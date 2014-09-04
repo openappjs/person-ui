@@ -4,36 +4,45 @@ var fs = require('fs');
 var nested = require('check-nested');
 var h = mercury.h;
 var Link = require('./link');
-var Image = require('./image');
+var Icon = require('./icon');
 
-var icon = Image({
-  style: {
-    'position': 'absolute',
-    'display':'inline-block',
-    'top': 0,
-    'bottom': 0,
-    'right': '10px',
-    'margin': 'auto'
-  },
+
+// var icon = Image({
+//   style: {
+//     'position': 'absolute',
+//     'display':'inline-block',
+//     'top': 0,
+//     'bottom': 0,
+//     'right': '10px',
+//     'margin': 'auto'
+//   },
+//   model: {
+//     src: 'data:image/png;base64,' + fs.readFileSync(__dirname + "/images/glyphicons_223_chevron-right.png", "base64")
+//   }
+// }).state;
+
+var icon = Icon({
   model: {
-    src: 'data:image/png;base64,' + fs.readFileSync(__dirname + "/images/glyphicons_223_chevron-right.png", "base64")
+    puaCode: '&#xE600',
+    iconName: 'profile link'
   }
 }).state;
-
-var link = Link({
-  model: {
-    href: '/mikey-williams',
-    content: icon
-  },
-  style: {}
-}).state;
-
 
 function Person (options) {
   options = options || {};
   var style = options.style || {};
   var config = options.config || {};
   var model = options.model || {};
+
+  var link = Link({
+    model: {
+      href: "/"+model["@id"],
+      content: icon
+    },
+    //TODO viewAs and responsive logic
+    config: require('./styles/listItemMobile').person.commands.link
+  }).state;
+
   var commands = [link];
 
 
@@ -84,6 +93,12 @@ function Person (options) {
 }
 
 Person.properties = ["name", "email", "bio", "image"];
+
+Person.changeViewAs = function (view, state) {
+  return function (data) {
+    //state.
+  }
+};
 
 Person.changeProperty = function (propName, state) {
   return function (data) {

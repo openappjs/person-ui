@@ -1,4 +1,6 @@
-var fs = require('fs');
+
+
+
 
 function inputStyle(propName, readOnly) {
   var displayed = {
@@ -63,6 +65,13 @@ module.exports = {
       },
       input: {
         style: inputStyle
+      }
+    },
+    commands: {
+      style: {},
+      link: {
+        style: {},
+        className: 'icon-arrow-right'
       }
     }
   }

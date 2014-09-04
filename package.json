@@ -4,9 +4,8 @@
   "description": "person user interface",
   "main": "index.js",
   "scripts": {
-    "example": "beefy -p 5000 example/app.js",
-    "test": "node test/index.js",
-    "develop": "beefy -p 5000 example/app.js"
+    "example": "beefy -p 5000 example/app.js example/test.html --live",
+    "test": "node test/index.js"
   },
   "browserify": {
     "transform": [
@@ -26,9 +25,12 @@
   },
   "homepage": "https://github.com/openappjs/person-ui",
   "dependencies": {
+    "absurd": "^0.3.31",
     "brfs": "^1.2.0",
     "check-nested": "0.0.3",
+    "css-builder": "0.0.7",
     "css-face-string": "0.0.2",
+    "css.escape": "^0.2.1",
     "debug": "^1.0.4",
     "font-awesome": "^4.2.0",
     "global": "^4.2.1",
@@ -40,6 +42,7 @@
   },
   "devDependencies": {
     "beefy": "^2.1.0",
+    "bff": "^0.1.5",
     "cssify": "^0.5.1",
     "decomponentify": "0.0.3",
     "envify": "^2.0.1"
