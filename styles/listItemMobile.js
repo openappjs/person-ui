@@ -68,10 +68,10 @@ module.exports = {
       }
     },
     commands: {
-      style: {},
-      link: {
-        style: {},
-        className: 'icon-arrow-right'
+      profileLink: {
+        style: {
+          right: '5px'
+        }
       }
     }
   }

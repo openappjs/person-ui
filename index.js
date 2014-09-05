@@ -3,30 +3,10 @@ var mercury = require('mercury');
 var fs = require('fs');
 var nested = require('check-nested');
 var h = mercury.h;
-var Link = require('./link');
-var Icon = require('./icon');
 
-
-// var icon = Image({
-//   style: {
-//     'position': 'absolute',
-//     'display':'inline-block',
-//     'top': 0,
-//     'bottom': 0,
-//     'right': '10px',
-//     'margin': 'auto'
-//   },
-//   model: {
-//     src: 'data:image/png;base64,' + fs.readFileSync(__dirname + "/images/glyphicons_223_chevron-right.png", "base64")
-//   }
-// }).state;
-
-var icon = Icon({
-  model: {
-    puaCode: '&#xE600',
-    iconName: 'profile link'
-  }
-}).state;
+//require custom components
+var profileLink = require('./child-components/profileLink');
+var rightArrowIcon = require('./child-components/rightArrowIcon')
 
 function Person (options) {
   options = options || {};
@@ -34,15 +14,15 @@ function Person (options) {
   var config = options.config || {};
   var model = options.model || {};
 
-  var link = Link({
-    model: {
-      href: "/"+model["@id"],
-      content: icon
-    },
-    //TODO viewAs and responsive logic
-    config: require('./styles/listItemMobile').person.commands.link
-  }).state;
-
+  //instatiate child components
+  var icon = rightArrowIcon({
+    screenReaderText: 'profile link',
+    style: {iconDiv: {style: {right: '5px'}}}
+  })();
+  var link = profileLink({
+    id: model['@id'], 
+    children: [icon]
+  })();
   var commands = [link];
 
 
@@ -65,7 +45,6 @@ function Person (options) {
 
   // create state
   var state = mercury.struct({
-    //TODO select style/config from multiple options logic
     commands: mercury.array(commands),
     config: mercury.struct(config),
     style: mercury.struct(require('./styles/listItemMobile')),
