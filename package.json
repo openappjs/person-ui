@@ -37,6 +37,7 @@
     "insert-css": "^0.2.0",
     "isarray": "0.0.1",
     "mercury": "^6.0.1",
+    "meta-tags": "git://github.com/openappjs/meta-tags",
     "raf": "^2.0.3",
     "tape": "^2.14.0"
   },

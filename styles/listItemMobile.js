@@ -1,6 +1,14 @@
+var mercury = require('mercury');
+var Tag = require('meta-tags');
 
+var tag = Tag({
+  model: {
+    Name: 'viewport',
+    content: 'width=device-width, initial-scale=1'
+  }
+});
 
-
+mercury.app(document.head, tag.state, Tag.render)
 
 function inputStyle(propName, readOnly) {
   var displayed = {
@@ -30,49 +38,30 @@ function inputStyle(propName, readOnly) {
 
 };
 
-
-
 module.exports = {
   person: {
-    // TODO add next arrow icon
-    style: {
-      'position': 'relative',
-      'display': 'block',
-      'padding': '10px 15px',
-      'margin-bottom': '-1px',
-      'height': '50px'
-    },
-    image: {
-      style: {
-        'position': 'absolute',
-        'display':'inline-block',
-        'width': '40px',
-        'height': '40px',
-        'top': 0,
-        'bottom': 0,
-        'margin': 'auto'
-      }
-    },
-    properties: {
-      style: {
-        'display': 'inline-block',
-        'padding-left': '8px'
-      },
-      label: {
-        style: {
-          'display': 'none'          
-        }
-      },
-      input: {
-        style: inputStyle
-      }
-    },
-    commands: {
-      profileLink: {
-        style: {
-          right: '5px'
-        }
-      }
-    }
-  }
+    'position': 'relative',
+    'display': 'block',
+    'padding': '10px 15px',
+    'margin-bottom': '-1px',
+    'height': '50px'
+  },
+  image: {
+    'position': 'absolute',
+    'display':'inline-block',
+    'width': '40px',
+    'height': '40px',
+    'top': 0,
+    'bottom': 0,
+    'margin': 'auto'
+  },
+  properties: {
+    'display': 'inline-block',
+    'padding-left': '8px'
+  },
+  label: {
+    'display': 'none'          
+  },
+  input: mercury.value(inputStyle),
+  commands: {}
 }

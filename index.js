@@ -1,31 +1,14 @@
 var debug = require('debug')('person-ui');
 var mercury = require('mercury');
-var fs = require('fs');
-var nested = require('check-nested');
+var fs = require('fs'); 
 var h = mercury.h;
-
-//require custom components
-var profileLink = require('./child-components/profileLink');
-var rightArrowIcon = require('./child-components/rightArrowIcon')
 
 function Person (options) {
   options = options || {};
   var style = options.style || {};
   var config = options.config || {};
   var model = options.model || {};
-
-  //instatiate child components
-  var icon = rightArrowIcon({
-    screenReaderText: 'profile link',
-    style: {iconDiv: {style: {right: '5px'}}}
-  })();
-  var link = profileLink({
-    id: model['@id'], 
-    children: [icon]
-  })();
-  var commands = [link];
-
-
+  var commands = options.children.commands || [];
 
   // setup property state and events
   var eventNames = [];
@@ -96,16 +79,18 @@ Person.toggleEditProperty = function (propName, state) {
 Person.renderProperty = function (propName, state, events) {
   var readOnly = !state.editing["prop-"+propName];
 
+  console.log(state.style.input, 'state.style')
+
   return h('div.property.prop-'+propName, {}, [
     h('label', {
-      style: state.style.person.properties.label.style
+      style: state.style.label
     }, propName),
     h('input', {
       type: "text",
       name: propName,
       value: state.entity["prop-"+propName],
       readOnly: readOnly,
-      style: state.style.person.properties.input.style(propName, readOnly),
+      style: state.style.input(propName, readOnly),
       'ev-click': mercury.event(events["toggleEdit-"+propName]),
       'ev-event': mercury.changeEvent(events["change-"+propName]),
     }),
@@ -133,18 +118,18 @@ Person.render = function (state, events) {
   }
 
   return h('div.ui.person', {
-    style: state.style.person.style
+    style: state.style.person
   }, [
       h('div.image', {
-        style: nested(state, 'state.style.person.image.style') || null
+        style: state.style.image
       }, Person.renderImage(state, events)),
       h('div.properties', {
-        style: nested(state, 'state.style.person.properties.style') || null
+        style: state.style.properties
       }, Person.properties.map(function (propName) {
         if (propName !== 'image') { return Person.renderProperty(propName, state, state.events); }
       })),
       h('div.commands', {
-        style: nested(state, 'state.style.person.commands.style') || null
+        style: state.style.commands
       }, commands.map(function (command) {
         return h('.command', {}, command)
       })),
