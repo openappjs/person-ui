@@ -26,7 +26,12 @@ require('../index.css');
 var icon = Icon({
   model: {
     iconName: 'icon-arrow-right',
-    screenReaderText: 'profile link'
+    screenReaderText: 'profile link',
+    unicode: "\\f105",
+    fontFamily: 'icons'
+  },
+  style: {
+    lineHeight: '32px',
   }
 }).state;
 

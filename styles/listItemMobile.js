@@ -44,7 +44,7 @@ module.exports = {
     'display': 'block',
     'padding': '10px 15px',
     'margin-bottom': '-1px',
-    'height': '50px'
+    'height': '50px',
   },
   image: {
     'position': 'absolute',
@@ -63,5 +63,8 @@ module.exports = {
     'display': 'none'          
   },
   input: mercury.value(inputStyle),
-  commands: {}
+  commands: {},
+  command: {
+    height: '32px'
+  }
 }

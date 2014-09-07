@@ -5,6 +5,7 @@ var cssBuilder = require('css-builder');
 var b = cssBuilder();
 var insertCss = require('insert-css');
 var exists = require('check-nested');
+var extend = require('extend');
 
 screenReaderTextInlineStyle = {
   position: 'absolute',
@@ -12,22 +13,6 @@ screenReaderTextInlineStyle = {
   left: '-9999px'
 }
 
-
-var rulesObject = {
-  '.icon-arrow-right:before': {
-    fontFamily: 'icons',
-    speak: 'none',
-    textTransform: 'none',
-    lineHeight: 1,
-    webkitFontSmoothing: 'antialiased',
-    mozOsxFontSmoothing: 'grayscale',
-    content: '"\\f105"',
-    textDecoration: 'none'
-  }
-}
-
-b.rules(rulesObject);
-insertCss(b.toString());
 
 var FontIcon = function (options) {
   options = options || {};
@@ -41,6 +26,25 @@ var FontIcon = function (options) {
     style: mercury.struct(style),
     render: mercury.value(FontIcon.render)
   });
+
+  var selector = '.' + model.iconName + ':before';
+  var rulesObject = {};
+  rulesObject[selector] = {
+      fontFamily: model.fontFamily,
+      speak: 'none',
+      textTransform: 'none',
+      webkitFontSmoothing: 'antialiased',
+      mozOsxFontSmoothing: 'grayscale',
+      content: "'" + model.unicode +"'",
+      textDecoration: 'none',
+  };
+
+  rulesObject[selector] = extend(rulesObject[selector], style);
+
+  b.rules(rulesObject);
+  insertCss(b.toString());
+
+
 
   return {state: state};
 };

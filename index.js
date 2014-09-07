@@ -131,7 +131,7 @@ Person.render = function (state, events) {
       h('div.commands', {
         style: state.style.commands
       }, commands.map(function (command) {
-        return h('.command', {}, command)
+        return h('.command', {style: state.style.command}, command)
       })),
   ])
   ;
