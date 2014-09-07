@@ -63,7 +63,7 @@ module.exports = {
     'display': 'none'          
   },
   input: mercury.value(inputStyle),
-  commands: {},
+  commands: {position: 'relative'},
   command: {
     height: '32px'
   }

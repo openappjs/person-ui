@@ -41,10 +41,13 @@ var link = Link({
   },
   children: [icon],
   style: {
-      float: 'right',
+      position: 'absolute',
       textDecoration: 'none',
       fontSize: '32px',
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      top: '-14px',
+      right: '0px',
+      color: '#777777'
   }
 }).state;
 
