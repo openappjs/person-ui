@@ -1,6 +1,22 @@
 var debug = require('debug')('person-ui');
 var mercury = require('mercury');
 var h = mercury.h;
+require("setimmediate");
+
+function QueryParent (state) {
+  this.state = state;
+};
+
+QueryParent.prototype.hook = function (elem, propName) {
+
+  setImmediate(function () {
+    console.log('hooking it ', elem.parentNode.clientWidth)
+
+
+
+  }.bind(this))
+}
+
 
 function Person (options) {
 
@@ -92,7 +108,8 @@ Person.render = function (state, events) {
   debug("render", state, events);
 
   return h('div.ui.person', {
-    style: state.config.person.style
+    style: state.config.person.style,
+    'ev-elementQuery': new QueryParent(state)
   }, [
     h('div.image', {
       style: state.config.person.image.style
