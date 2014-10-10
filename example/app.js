@@ -8,7 +8,6 @@ var cfs = require('css-face-string');
 var Link = require('./child-components/link');
 var Icon = require('./child-components/icon');
 
-
 //insert styles and fonts
 var fontAwesome = cfs.file({
   name: 'icons',
@@ -57,7 +56,7 @@ var person = Person({
     name: "Mikey Williams",
     email: "dinosaur@example.com",
     bio: "a human from planet earth",
-    image: 'data:image/png;base64,' + fs.readFileSync(__dirname + "/images/ahdinosaur.jpeg", "base64"),
+    image: 'data:image/png;base64,' + fs.readFileSync(__dirname + "/images/ahdinosaur.jpeg", "base64")
   },
   children: {
     commands: [link]

@@ -19,7 +19,7 @@ function testElementStyle (t, element, styleSpec) {
 test("person creation", function (t) {
   // setup
   var person = Person({
-    person: {
+    model: {
       name: "Mikey Williams",
       email: "dinosaur@example.com",
       bio: "a human from planet earth",

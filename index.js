@@ -2,6 +2,25 @@ var debug = require('debug')('person-ui');
 var mercury = require('mercury');
 var fs = require('fs'); 
 var h = mercury.h;
+require("setimmediate");
+
+function QueryParent (state) {
+  this.state = state;
+};
+
+QueryParent.prototype.hook = function (elem, propName) {
+
+  setImmediate(function () {
+
+
+
+    console.log('hooking it ', this)
+
+
+
+  }.bind(this))
+}
+
 
 function Person (options) {
   options = options || {};
@@ -16,7 +35,7 @@ function Person (options) {
   var editingStruct = {};
 
   Person.properties.forEach(function (propName) {
-    entityStruct["prop-"+propName] = mercury.value(model[propName]);
+    entityStruct["prop-"+propName] = mercury.value(options.model[propName]);
     if (propName !== 'image') {
       eventNames.push("change-"+propName);
       editingStruct["prop-"+propName] = mercury.value(false);
@@ -79,8 +98,6 @@ Person.toggleEditProperty = function (propName, state) {
 Person.renderProperty = function (propName, state, events) {
   var readOnly = !state.editing["prop-"+propName];
 
-  console.log(state.style.input, 'state.style')
-
   return h('div.property.prop-'+propName, {}, [
     h('label', {
       style: state.style.label
@@ -106,6 +123,7 @@ Person.renderImage = function (state, events) {
 Person.render = function (state, events) {
   debug("render", state, events);
 
+<<<<<<< HEAD
   var commands = [];
 
   for (var i = 0; i < state.commands.length; i++) {
@@ -132,7 +150,7 @@ Person.render = function (state, events) {
         style: state.style.commands
       }, commands.map(function (command) {
         return h('.command', {style: state.style.command}, command)
-      })),
+      }))
   ])
   ;
 };
