@@ -10,7 +10,10 @@ function QueryParent (state) {
 QueryParent.prototype.hook = function (elem, propName) {
 
   setImmediate(function () {
-    console.log('hooking it ', elem.parentNode.clientWidth)
+
+
+
+    console.log('hooking it ', this)
 
 
 
