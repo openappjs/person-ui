@@ -60,7 +60,8 @@ var person = Person({
   },
   children: {
     commands: [link]
-  }
+  },
+  styles: require('../styles')
 });
 
 
