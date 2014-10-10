@@ -4,20 +4,26 @@ var fs = require('fs');
 var h = mercury.h;
 require("setimmediate");
 
+var styles = {
+  base: require('./styles/base'),
+  listItemMobile: require('./styles/listItemMobile')
+};
+
 function QueryParent (state) {
   this.state = state;
 };
 
 QueryParent.prototype.hook = function (elem, propName) {
-
   setImmediate(function () {
+    var parent = elem.parentElement;
+    var width = parent.clientWidth;
+    var height = parent.clientHeight;
 
+    // if ( width < 1265 && height < 517) {
+    //   this.state.test(this.state)
+    // }
 
-
-    console.log('hooking it ', this)
-
-
-
+    console.log('hooking it ', this, width, height)
   }.bind(this))
 }
 
@@ -49,11 +55,12 @@ function Person (options) {
   var state = mercury.struct({
     commands: mercury.array(commands),
     config: mercury.struct(config),
-    style: mercury.struct(require('./styles/listItemMobile')),
+    style: mercury.struct(styles.base),
     entity: mercury.struct(entityStruct),
     editing: mercury.struct(editingStruct),
     events: events,
     render: mercury.value(Person.render),
+    test: mercury.value(Person.changeStyle)
   });
 
   // define events
@@ -75,11 +82,18 @@ function Person (options) {
 
 Person.properties = ["name", "email", "bio", "image"];
 
+Person.changeStyle = function (state) {
+  state.style.set(styles.listItemMobile)
+};
+
+
 Person.changeViewAs = function (view, state) {
   return function (data) {
     //state.
   }
 };
+
+
 
 Person.changeProperty = function (propName, state) {
   return function (data) {
@@ -109,7 +123,7 @@ Person.renderProperty = function (propName, state, events) {
       readOnly: readOnly,
       style: state.style.input(propName, readOnly),
       'ev-click': mercury.event(events["toggleEdit-"+propName]),
-      'ev-event': mercury.changeEvent(events["change-"+propName]),
+      'ev-event': mercury.changeEvent(events["change-"+propName])
     }),
   ]);
 };
@@ -122,8 +136,9 @@ Person.renderImage = function (state, events) {
 
 Person.render = function (state, events) {
   debug("render", state, events);
+  console.log('state in render', state)
 
-<<<<<<< HEAD
+
   var commands = [];
 
   for (var i = 0; i < state.commands.length; i++) {
@@ -136,7 +151,8 @@ Person.render = function (state, events) {
   }
 
   return h('div.ui.person', {
-    style: state.style.person
+    style: state.style.person,
+    'ev-queryParent': new QueryParent(state)
   }, [
       h('div.image', {
         style: state.style.image
