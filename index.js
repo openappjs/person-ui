@@ -1,14 +1,12 @@
 var debug = require('debug')('person-ui');
 var mercury = require('mercury');
+var validate = require('jsonschema').validate;
 var fs = require('fs'); 
 var h = mercury.h;
 require("setimmediate");
 
-
-
-function QueryParent (styles, elemName) {
+function QueryParent (styles) {
   this.styles = styles;
-  this.elemName = elemName;
 };
 
 QueryParent.prototype.hook = function (elem) {
@@ -17,13 +15,44 @@ QueryParent.prototype.hook = function (elem) {
     var width = parent.clientWidth;
     var height = parent.clientHeight;
     var style = this.styles(width, height);
-    console.log('style', style, this.elemName)
-    var styleString = JSON.stringify(style[this.elemName])
+    console.log('style', style)
+    this.recurse(elem, style)
+
+  }.bind(this))
+};
+
+QueryParent.prototype.recurse = function (elem, style) {
+  if (this.match(elem, style)) {
+    console.log('yes match ', elem, style)
+    this.setStyle(elem, style);
+    if (elem.childNodes && style.children) {
+      for (var i=0;i<elem.childNodes.length;i++) {
+        for (var j=0;j<style.children.length;j++) {
+          console.log(elem.childNodes[i], style.children[j])
+          this.recurse(elem.childNodes[i], style.children[j])
+        }
+      }
+    }
+  }
+}
+
+QueryParent.prototype.setStyle = function (elem, style) {
+  var inlineStyle = JSON.stringify(style.properties)
                         .replace(/[{}"]/g, '')
                         .replace(/,/g, '; ');
-    console.log('styleString', styleString)
-    elem.setAttribute('style', styleString)
-  }.bind(this))
+  console.log('setting style', elem, inlineStyle)
+
+  elem.setAttribute('style', inlineStyle);
+};
+
+QueryParent.prototype.match = function (elem, style) {
+  console.log('match fired', typeof style.className)
+  if (typeof style.className === 'string' && elem.classList.contains(style.className)) return true;
+  if (typeof style.className === 'object') {
+    var validation = validate(elem.className, style.className);
+    console.log(validation, 'validation')
+    return validation.errors.length > 0 ? false : true;
+  }
 };
 
 function Person (options) {
@@ -103,15 +132,12 @@ Person.renderProperty = function (propName, state, events) {
   var readOnly = !state.editing["prop-"+propName];
 
   return h('div.property.prop-'+propName, {}, [
-    h('label', {
-      'ev-queryParent': new QueryParent(state.styles, 'label')
-    }, propName),
+    h('label.label', propName),
     h('input', {
       type: "text",
       name: propName,
       value: state.entity["prop-"+propName],
       readOnly: readOnly,
-      'ev-queryParent': new QueryParent(state.styles, 'input'),
       'ev-click': mercury.event(events["toggleEdit-"+propName]),
       'ev-event': mercury.changeEvent(events["change-"+propName])
     }),
@@ -138,22 +164,17 @@ Person.render = function (state, events) {
         command && command.render && command.render(command) || stringify(command)
       );
     }
-  }
+  };
+
 
   return h('div.ui.person', {
-    'ev-queryParent': new QueryParent(state.styles, 'person')
+    'ev-queryParent': new QueryParent(state.styles)
   }, [
-      h('div.image', {
-        'ev-queryParent': new QueryParent(state.styles, 'image')
-      }, Person.renderImage(state, events)),
-      h('div.properties', {
-        'ev-queryParent': new QueryParent(state.styles, 'person')
-      }, Person.properties.map(function (propName) {
+      h('div.image', Person.renderImage(state, events)),
+      h('div.properties', Person.properties.map(function (propName) {
         if (propName !== 'image') { return Person.renderProperty(propName, state, state.events); }
       })),
-      h('div.commands', {
-        'ev-queryParent': new QueryParent(state.styles, 'commands')
-      }, commands.map(function (command) {
+      h('div.commands', commands.map(function (command) {
         return h('.command', command)
       }))
   ])
