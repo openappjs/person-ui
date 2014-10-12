@@ -10,33 +10,33 @@ var tag = Tag({
 
 mercury.app(document.head, tag.state, Tag.render)
 
-function inputStyle(propName, readOnly) {
-  var displayed = {
-  'position': 'absolute',
-  'display': 'inline-block',
-  'top': 0 ,
-  'bottom': 0,
-  'margin': 'auto',
-  'height': '20px',
-  'left': '63px'
-  };
+// function inputStyle(propName, readOnly) {
+//   var displayed = {
+//   'position': 'absolute',
+//   'display': 'inline-block',
+//   'top': 0 ,
+//   'bottom': 0,
+//   'margin': 'auto',
+//   'height': '20px',
+//   'left': '63px'
+//   };
 
-  var hidden = {
-    'display': 'none'
-  };
+//   var hidden = {
+//     'display': 'none'
+//   };
 
-  if (propName === 'name') {
-    if (readOnly) {
-      displayed['border'] = 'none';
-      return displayed;   
-    } else {
-      return displayed;
-    }
-  } else {
-    return hidden;
-  };
+//   if (propName === 'name') {
+//     if (readOnly) {
+//       displayed['border'] = 'none';
+//       return displayed;   
+//     } else {
+//       return displayed;
+//     }
+//   } else {
+//     return hidden;
+//   };
 
-};
+// };
 
 module.exports = {
   type: "Person-UI",
@@ -89,7 +89,15 @@ module.exports = {
               properties: {
                 'display': 'none'
               }
-            }
+            },
+            {
+              type: "childElement",
+              className: 'input',
+              properties: {
+                'border': 'none'
+              }
+            },
+
           ]
         },
         {
@@ -97,16 +105,7 @@ module.exports = {
           className: {"not": {pattern: "prop-name"}},
           properties: {
             'display': 'none',
-          },
-          children: [
-            {
-              type: "childElement",
-              tagName: 'label',
-              properties: {
-                'display': 'none'
-              }
-            }
-          ]
+          }
         },
       ]
     },

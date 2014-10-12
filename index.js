@@ -15,16 +15,13 @@ QueryParent.prototype.hook = function (elem) {
     var width = parent.clientWidth;
     var height = parent.clientHeight;
     var style = this.styles(width, height);
-    console.log('style', style)
     this.recurse(elem, style)
-
   }.bind(this))
 };
 
 QueryParent.prototype.recurse = function (elem, style) {
   if (this.match(elem, style)) {
-    console.log('yes match ', elem, style)
-    this.setStyle(elem, style);
+    this.setStyle(elem, style.properties);
     if (elem.childNodes && style.children) {
       for (var i=0;i<elem.childNodes.length;i++) {
         for (var j=0;j<style.children.length;j++) {
@@ -36,22 +33,18 @@ QueryParent.prototype.recurse = function (elem, style) {
   }
 }
 
-QueryParent.prototype.setStyle = function (elem, style) {
-  var inlineStyle = JSON.stringify(style.properties)
+QueryParent.prototype.setStyle = function (elem, properties) {
+  var inlineStyle = JSON.stringify(properties)
                         .replace(/[{}"]/g, '')
                         .replace(/,/g, '; ');
-  console.log('setting style', elem, inlineStyle)
-
   elem.setAttribute('style', inlineStyle);
 };
 
 QueryParent.prototype.match = function (elem, style) {
-  console.log('match fired', typeof style.className)
   if (typeof style.className === 'string' && elem.classList.contains(style.className)) return true;
   if (typeof style.className === 'object') {
     var validation = validate(elem.className, style.className);
-    console.log(validation, 'validation')
-    return validation.errors.length > 0 ? false : true;
+    return validation.errors.length === 0 ? true : false;
   }
 };
 
@@ -133,7 +126,7 @@ Person.renderProperty = function (propName, state, events) {
 
   return h('div.property.prop-'+propName, {}, [
     h('label.label', propName),
-    h('input', {
+    h('input.input', {
       type: "text",
       name: propName,
       value: state.entity["prop-"+propName],
