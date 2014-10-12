@@ -44,8 +44,6 @@ var FontIcon = function (options) {
   b.rules(rulesObject);
   insertCss(b.toString());
 
-
-
   return {state: state};
 };
 

@@ -1,52 +1,9 @@
 var debug = require('debug')('person-ui');
 var mercury = require('mercury');
-var validate = require('jsonschema').validate;
 var fs = require('fs'); 
 var h = mercury.h;
-require("setimmediate");
+var ElementQuery = require('element-query');
 
-function QueryParent (styles) {
-  this.styles = styles;
-};
-
-QueryParent.prototype.hook = function (elem) {
-  setImmediate(function () {
-    var parent = elem.parentElement;
-    var width = parent.clientWidth;
-    var height = parent.clientHeight;
-    var style = this.styles(width, height);
-    this.recurse(elem, style)
-  }.bind(this))
-};
-
-QueryParent.prototype.recurse = function (elem, style) {
-  if (this.match(elem, style)) {
-    this.setStyle(elem, style.properties);
-    if (elem.childNodes && style.children) {
-      for (var i=0;i<elem.childNodes.length;i++) {
-        for (var j=0;j<style.children.length;j++) {
-          console.log(elem.childNodes[i], style.children[j])
-          this.recurse(elem.childNodes[i], style.children[j])
-        }
-      }
-    }
-  }
-}
-
-QueryParent.prototype.setStyle = function (elem, properties) {
-  var inlineStyle = JSON.stringify(properties)
-                        .replace(/[{}"]/g, '')
-                        .replace(/,/g, '; ');
-  elem.setAttribute('style', inlineStyle);
-};
-
-QueryParent.prototype.match = function (elem, style) {
-  if (typeof style.className === 'string' && elem.classList.contains(style.className)) return true;
-  if (typeof style.className === 'object') {
-    var validation = validate(elem.className, style.className);
-    return validation.errors.length === 0 ? true : false;
-  }
-};
 
 function Person (options) {
   options = options || {};
@@ -145,8 +102,6 @@ Person.renderImage = function (state, events) {
 
 Person.render = function (state, events) {
   debug("render", state, events);
-  console.log('state in render', state)
-
 
   var commands = [];
 
@@ -161,7 +116,7 @@ Person.render = function (state, events) {
 
 
   return h('div.ui.person', {
-    'ev-queryParent': new QueryParent(state.styles)
+    'ev-elementQuery': new ElementQuery(state.styles)
   }, [
       h('div.image', Person.renderImage(state, events)),
       h('div.properties', Person.properties.map(function (propName) {
