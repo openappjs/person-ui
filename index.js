@@ -11,6 +11,7 @@ function Person (options) {
   var config = options.config || {};
   var model = options.model || {};
   var commands = options.children.commands || [];
+  var view = options.view;
 
   // setup property state and events
   var eventNames = [];
@@ -26,6 +27,8 @@ function Person (options) {
     }
   });
 
+  eventNames.push('click');
+
   var events = mercury.input(eventNames);
 
   // create state
@@ -36,8 +39,11 @@ function Person (options) {
     editing: mercury.struct(editingStruct),
     styles: mercury.value(styles),
     events: events,
+    view: mercury.value(view),
     render: mercury.value(Person.render),
   });
+
+  console.log('events', events)
 
   // define events
   Person.properties.forEach(function (propName) {
@@ -49,7 +55,9 @@ function Person (options) {
         Person.toggleEditProperty(propName, state)
       );
     }
-  })
+  });
+
+  events.click(Person.changeViewAs('profile', state))
 
   debug("setup", state());
 
@@ -59,8 +67,9 @@ function Person (options) {
 Person.properties = ["name", "email", "bio", "image"];
 
 Person.changeViewAs = function (view, state) {
+  console.log('changing view')
   return function (data) {
-    //state.
+    state.view.set(view)
   }
 };
 
@@ -116,12 +125,10 @@ Person.render = function (state, events) {
 
 
   return h('div.ui.person', {
-    'ev-elementQuery': new ElementQuery(state.styles)
-    // "ev-click": function() {
-    //   console.log('person clicked')
-    // }
+    'ev-elementQuery': new ElementQuery(state.styles),
+    'ev-click': mercury.event(state.events['click'])
   }, [
-      h('div.image', Person.renderImage(state, events)),
+      h('div.image', Person.renderImage(state, state.events)),
       h('div.properties', Person.properties.map(function (propName) {
         if (propName !== 'image') { return Person.renderProperty(propName, state, state.events); }
       })),

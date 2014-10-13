@@ -47,6 +47,7 @@ module.exports = {
     'padding': '10px 15px',
     'margin-bottom': '-1px',
     'height': '50px',
+    'cursor': 'pointer'
   },
   children: [
     {

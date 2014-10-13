@@ -1,6 +1,7 @@
 var mercury = require('mercury');
 var Person = require('../');
 var Aviator = require('aviator');
+var fs = require('fs');
 
 var insertCss = require('insert-css');
 var cfs = require('css-face-string');
@@ -68,7 +69,10 @@ var person = Person({
   children: {
     commands: [link]
   },
-  styles: require('../styles')
+  styles: require('../styles'),
+  view: 'list-item',
+  //TODO pass router in here 
+  router: 'ROUTER'
 });
 
 
