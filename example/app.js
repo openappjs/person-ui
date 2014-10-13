@@ -22,11 +22,23 @@ var fontAwesome = cfs.file({
 insertCss(fontAwesome)
 require('../index.css');
 
+var PeopleTarget = {
+  render: function (req) {
+    console.log('req', req)
+  }
+}
 
-// Aviator.setRoutes({
-//   '/people':
-//   target: 
-// })
+
+Aviator.setRoutes({
+  '/people': {
+    target: PeopleTarget,
+      '/:id': {
+        '/*': 'render'
+      }
+    }
+});
+
+Aviator.dispatch();
 
 
 //bootstrap child components
@@ -71,8 +83,7 @@ var person = Person({
   },
   styles: require('../styles'),
   view: 'list-item',
-  //TODO pass router in here 
-  router: 'ROUTER'
+  router: Aviator
 });
 
 

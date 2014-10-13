@@ -12,6 +12,7 @@ function Person (options) {
   var model = options.model || {};
   var commands = options.children.commands || [];
   var view = options.view;
+  var router = options.router;
 
   // setup property state and events
   var eventNames = [];
@@ -40,6 +41,7 @@ function Person (options) {
     styles: mercury.value(styles),
     events: events,
     view: mercury.value(view),
+    router: mercury.value(router),
     render: mercury.value(Person.render),
   });
 
@@ -67,7 +69,13 @@ function Person (options) {
 Person.properties = ["name", "email", "bio", "image"];
 
 Person.changeViewAs = function (view, state) {
-  console.log('changing view')
+  console.log('changing view', view, state.entity['prop-name']())
+  if (view === 'profile') {
+    var id = state.entity['prop-name']()
+      .replace(' ', '-')
+      .toLowerCase();
+    state.router().navigate('/people/'+id)
+  }
   return function (data) {
     state.view.set(view)
   }
@@ -76,7 +84,7 @@ Person.changeViewAs = function (view, state) {
 Person.changeProperty = function (propName, state) {
   return function (data) {
     debug("changeProperty", propName, ":", data);
-    state.entity["prop-"+propName].set(data[name]);
+    state.entity["prop-"+propName].set(data[propName]);
   };
 };
 
