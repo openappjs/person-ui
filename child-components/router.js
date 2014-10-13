@@ -67,6 +67,7 @@ function Router() {
     }
  
     function onRouteSet(uri) {
+      console.log('onRouteSet', uri)
         if (inPopState) {
             inPopState = false;
             return;
@@ -85,6 +86,7 @@ function popstate() {
         window.addEventListener('popstate', onPopState);
  
         function onPopState() {
+            console.log('onPopState')
             broadcast(String(document.location.pathname));
         }
     });

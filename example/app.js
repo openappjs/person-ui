@@ -1,6 +1,6 @@
 var mercury = require('mercury');
 var Person = require('../');
-var fs = require('fs');
+var Aviator = require('aviator');
 
 var insertCss = require('insert-css');
 var cfs = require('css-face-string');
@@ -20,6 +20,13 @@ var fontAwesome = cfs.file({
 });
 insertCss(fontAwesome)
 require('../index.css');
+
+
+// Aviator.setRoutes({
+//   '/people':
+//   target: 
+// })
+
 
 //bootstrap child components
 var icon = Icon({

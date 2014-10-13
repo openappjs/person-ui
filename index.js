@@ -109,7 +109,7 @@ Person.render = function (state, events) {
     var command = state.commands[i];
     if (typeof command !== 'undefined') {
       commands.push(
-        command && command.render && command.render(command) || stringify(command)
+        command && command.render && command.render(command) || command
       );
     }
   };
@@ -117,6 +117,9 @@ Person.render = function (state, events) {
 
   return h('div.ui.person', {
     'ev-elementQuery': new ElementQuery(state.styles)
+    // "ev-click": function() {
+    //   console.log('person clicked')
+    // }
   }, [
       h('div.image', Person.renderImage(state, events)),
       h('div.properties', Person.properties.map(function (propName) {
