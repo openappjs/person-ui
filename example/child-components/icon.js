@@ -48,7 +48,7 @@ var FontIcon = function (options) {
 };
 
 FontIcon.render = function (state, events) {
-  return h('div.iconDiv', { style: state.style.iconDiv }, [
+  return h('div.iconDiv', { style: state.style }, [
     h('span', {className: state.model.iconName}),
     h('span.screen-reader-text', {
       style: state.style.screenReaderText || screenReaderTextInlineStyle

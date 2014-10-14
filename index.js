@@ -1,5 +1,6 @@
 var debug = require('debug')('person-ui');
 var mercury = require('mercury');
+var _ = require('lodash');
 var fs = require('fs'); 
 var h = mercury.h;
 var ElementQuery = require('element-query');
@@ -10,9 +11,10 @@ function Person (options) {
   var styles = options.styles || {};
   var config = options.config || {};
   var model = options.model || {};
-  var commands = options.children.commands || [];
-  var view = options.view;
-  var router = options.router;
+  var commands = options.commands || {};
+  var children = options.children || [];
+  var view = options.view || 'profile';
+
 
   // setup property state and events
   var eventNames = [];
@@ -21,61 +23,71 @@ function Person (options) {
 
   Person.properties.forEach(function (propName) {
     entityStruct["prop-"+propName] = mercury.value(options.model[propName]);
-    if (propName !== 'image') {
-      eventNames.push("change-"+propName);
-      editingStruct["prop-"+propName] = mercury.value(false);
-      eventNames.push("toggleEdit-"+propName);
+    switch (propName) {
+      case 'image':
+        break;
+      case 'id':
+        break;
+      default:
+        eventNames.push("change-"+propName);
+        editingStruct["prop-"+propName] = mercury.value(false);
+        eventNames.push("toggleEdit-"+propName);
     }
   });
 
-  eventNames.push('click');
 
+  eventNames.push('click');
   var events = mercury.input(eventNames);
 
   // create state
   var state = mercury.struct({
-    commands: mercury.array(commands),
+    children: mercury.array(children),
+    commands: mercury.value(commands),
     config: mercury.struct(config),
     entity: mercury.struct(entityStruct),
     editing: mercury.struct(editingStruct),
     styles: mercury.value(styles),
     events: events,
     view: mercury.value(view),
-    router: mercury.value(router),
     render: mercury.value(Person.render),
   });
 
-  console.log('events', events)
-
   // define events
   Person.properties.forEach(function (propName) {
-    if (propName !== 'image' ) {
-      events["change-"+propName](
-        Person.changeProperty(propName, state)
-      );
-      events["toggleEdit-"+propName](
-        Person.toggleEditProperty(propName, state)
-      );
+    switch (propName) {
+      case 'image':
+        break;
+      case 'id':
+        break;
+      default:
+        events["change-"+propName](
+          Person.changeProperty(propName, state)
+        );
+        events["toggleEdit-"+propName](
+          Person.toggleEditProperty(propName, state)
+        );
     }
   });
 
-  events.click(Person.changeViewAs('profile', state))
+  events['click'](Person.click);
+
 
   debug("setup", state());
 
   return { state: state, events: events };
 }
 
-Person.properties = ["name", "email", "bio", "image"];
+Person.properties = ["name", "email", "bio", "image", "id"];
+
+Person.click = function (state) {
+  console.log('outer clicked', state)
+  return function (evt) {
+    state.commands.click()
+  }
+}
+
 
 Person.changeViewAs = function (view, state) {
-  console.log('changing view', view, state.entity['prop-name']())
-  if (view === 'profile') {
-    var id = state.entity['prop-name']()
-      .replace(' ', '-')
-      .toLowerCase();
-    state.router().navigate('/people/'+id)
-  }
   return function (data) {
     state.view.set(view)
   }
@@ -120,31 +132,29 @@ Person.renderImage = function (state, events) {
 Person.render = function (state, events) {
   debug("render", state, events);
 
-  var commands = [];
+  var children = [];
 
-  for (var i = 0; i < state.commands.length; i++) {
-    var command = state.commands[i];
-    if (typeof command !== 'undefined') {
-      commands.push(
-        command && command.render && command.render(command) || command
+  for (var i = 0; i < state.children.length; i++) {
+    var child = state.children[i];
+    if (typeof child !== 'undefined') {
+      children.push(
+        child && child.render && child.render(child) || child
       );
     }
   };
 
-
-  return h('div.ui.person', {
-    'ev-elementQuery': new ElementQuery(state.styles),
-    'ev-click': mercury.event(state.events['click'])
+  return h('.ui.person', {
+    'ev-elementQuery': new ElementQuery(state.styles, state.view),
+    'ev-click': Person.click(state)
   }, [
-      h('div.image', Person.renderImage(state, state.events)),
-      h('div.properties', Person.properties.map(function (propName) {
-        if (propName !== 'image') { return Person.renderProperty(propName, state, state.events); }
-      })),
-      h('div.commands', commands.map(function (command) {
-        return h('.command', command)
-      }))
-  ])
-  ;
+    h('.image', Person.renderImage(state, state.events)),
+    h('.properties', Person.properties.map(function (propName) {
+      if (propName !== ('image' || 'id')) { return Person.renderProperty(propName, state, state.events); }
+    })),
+    h('.children', children.map(function (child) {
+      return h('.child', child)
+    }))
+  ]);
 };
 
 module.exports = Person;

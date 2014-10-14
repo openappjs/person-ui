@@ -22,25 +22,6 @@ var fontAwesome = cfs.file({
 insertCss(fontAwesome)
 require('../index.css');
 
-var PeopleTarget = {
-  render: function (req) {
-    console.log('req', req)
-  }
-}
-
-
-Aviator.setRoutes({
-  '/people': {
-    target: PeopleTarget,
-      '/:id': {
-        '/*': 'render'
-      }
-    }
-});
-
-Aviator.dispatch();
-
-
 //bootstrap child components
 var icon = Icon({
   model: {
@@ -54,37 +35,55 @@ var icon = Icon({
   }
 }).state;
 
-var link = Link({
+//data
+var mikey = {
   model: {
-    href: '/mikey-williams'
-  },
-  children: [icon],
-  style: {
-      position: 'absolute',
-      textDecoration: 'none',
-      fontSize: '32px',
-      fontWeight: 'bold',
-      top: '-14px',
-      right: '0px',
-      color: '#777777'
-  }
-}).state;
-
-//bootstrap person component
-var person = Person({
-  model: {
+    id: 1,
     name: "Mikey Williams",
     email: "dinosaur@example.com",
     bio: "a human from planet earth",
     image: 'data:image/png;base64,' + fs.readFileSync(__dirname + "/images/ahdinosaur.jpeg", "base64")
   },
-  children: {
-    commands: [link]
-  },
+  children: [icon],
   styles: require('../styles'),
-  view: 'list-item',
-  router: Aviator
+  view: 'list-item'
+}
+
+
+var PeopleTarget = {
+  render: function (req) {
+    console.log('req', req)
+    mikey.view = 'profile';
+
+    var personProfile = Person(mikey)
+
+    mercury.app(document.body, personProfile.state, Person.render);
+
+
+  }
+}
+
+//define simple routing 
+Aviator.setRoutes({
+  '/people': {
+    target: PeopleTarget,
+      '/:id': {
+        '/*': 'render'
+      }
+    }
 });
+
+Aviator.dispatch();
+
+mikey['commands'] = {
+    click: function () {
+      Aviator.navigate('/people/mikey-williams')
+    }
+};
+
+
+//bootstrap person component
+var person = Person(mikey);
 
 
 

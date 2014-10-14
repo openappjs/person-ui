@@ -1,10 +1,14 @@
-module.exports = function (parentWidth, parentHeight) {
-  var style = {
+module.exports = function (options) {
+  var width = options.width,
+      height = options.height,
+      view = options.view;
+
+  var styleObj = {
     listItemMobile: require('./listItemMobile')
   };
 
   //element query logic
-  if (parentWidth < 2000 && parentHeight < 1000) return style.listItemMobile;
-
-
+  if (width < 2000 && height < 1000 && view === 'list-item') {
+    return styleObj.listItemMobile;
+  }
 }

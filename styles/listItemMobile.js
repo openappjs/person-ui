@@ -112,17 +112,31 @@ module.exports = {
     },
     {
       type: "childElement",
-      className: "commands",
+      className: "children",
       properties: {
         'position': 'relative'
       },
       children: [
         {
           type: "childElement",
-          className: "command",
+          className: "child",
           properties: {
             'height': "32px"
+          },
+          children: [
+          {
+            type: 'childElement',
+            className: "iconDiv",
+            properties: {
+              position: 'absolute',
+              'font-size': '32px',
+              'font-weight': 'bold',
+              top: '-14px',
+              right: '0px',
+              color: '#777777'
+            }
           }
+          ]
         }
       ]
     }

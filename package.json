@@ -43,6 +43,7 @@
     "insert-css": "^0.2.0",
     "isarray": "0.0.1",
     "jsonschema": "^1.0.0",
+    "lodash": "^2.4.1",
     "mercury": "^6.0.1",
     "meta-tags": "git://github.com/openappjs/meta-tags",
     "raf": "^2.0.3",
