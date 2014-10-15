@@ -4,11 +4,15 @@ module.exports = function (options) {
       view = options.view;
 
   var styleObj = {
-    listItemMobile: require('./listItemMobile')
+    listItemMobile: require('./listItemMobile'),
+    profileDesktop: require('./profileDesktop')
   };
 
   //element query logic
   if (width < 2000 && height < 1000 && view === 'list-item') {
     return styleObj.listItemMobile;
+  } else {
+    return styleObj.profileDesktop;
   }
+
 }

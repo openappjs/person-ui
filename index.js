@@ -13,8 +13,7 @@ function Person (options) {
   var model = options.model || {};
   var commands = options.commands || {};
   var children = options.children || [];
-  var view = options.view || 'profile';
-
+  var view = options.view || {};
 
   // setup property state and events
   var eventNames = [];
@@ -35,8 +34,7 @@ function Person (options) {
     }
   });
 
-
-  eventNames.push('click');
+  eventNames.push('click')
   var events = mercury.input(eventNames);
 
   // create state
@@ -51,6 +49,10 @@ function Person (options) {
     view: mercury.value(view),
     render: mercury.value(Person.render),
   });
+
+  state.events.click(function() {
+    state.view.set('profile')
+  })
 
   // define events
   Person.properties.forEach(function (propName) {
@@ -69,9 +71,6 @@ function Person (options) {
     }
   });
 
-  events['click'](Person.click);
-
-
   debug("setup", state());
 
   return { state: state, events: events };
@@ -80,9 +79,8 @@ function Person (options) {
 Person.properties = ["name", "email", "bio", "image", "id"];
 
 Person.click = function (state) {
-  console.log('outer clicked', state)
-  return function (evt) {
-    state.commands.click()
+  return function (data) {
+    state.commands.click(state)
   }
 }
 
@@ -130,6 +128,8 @@ Person.renderImage = function (state, events) {
 };
 
 Person.render = function (state, events) {
+  console.log('rendering ', state, events)
+
   debug("render", state, events);
 
   var children = [];
@@ -143,9 +143,9 @@ Person.render = function (state, events) {
     }
   };
 
-  return h('.ui.person', {
+  return h('#_'+state.entity['prop-id']+'.ui.person', {
     'ev-elementQuery': new ElementQuery(state.styles, state.view),
-    'ev-click': Person.click(state)
+    'ev-click': state.commands.click ? mercury.event(state.commands.click) : null
   }, [
     h('.image', Person.renderImage(state, state.events)),
     h('.properties', Person.properties.map(function (propName) {

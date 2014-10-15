@@ -50,23 +50,23 @@ var mikey = {
 }
 
 
-var PeopleTarget = {
+var ProfileTarget = {
   render: function (req) {
-    console.log('req', req)
     mikey.view = 'profile';
-
     var personProfile = Person(mikey)
-
+    var elem = document.getElementById('_'+mikey.model.id);
+    elem.remove();
     mercury.app(document.body, personProfile.state, Person.render);
-
+    console.log('history', history.state)
 
   }
 }
 
 //define simple routing 
+Aviator.pushStateEnabled = false;
 Aviator.setRoutes({
   '/people': {
-    target: PeopleTarget,
+    target: ProfileTarget,
       '/:id': {
         '/*': 'render'
       }
@@ -75,17 +75,16 @@ Aviator.setRoutes({
 
 Aviator.dispatch();
 
+//pass in commands
 mikey['commands'] = {
-    click: function () {
+    click: function (state) {
+      console.log('state', state)
       Aviator.navigate('/people/mikey-williams')
     }
 };
 
-
 //bootstrap person component
 var person = Person(mikey);
-
-
 
 //render app on body, trigger re-render on state change
 mercury.app(document.body, person.state, Person.render);
