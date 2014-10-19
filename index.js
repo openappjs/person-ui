@@ -11,6 +11,7 @@ function Person (options) {
   var styleController = options.styleController;
   var config = options.config || {};
   var model = options.model || {};
+  //TODO commands -> events
   var commands = options.commands || {};
   var parent = options.parent || {};
   var children = options.children || [];
