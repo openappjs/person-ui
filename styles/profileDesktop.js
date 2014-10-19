@@ -10,73 +10,36 @@ var tag = Tag({
 
 mercury.app(document.head, tag.state, Tag.render)
 
+
 module.exports = {
-  type: "Person-UI",
-  className: "person",
-  properties: {
+  person: {
+    'position': 'relative',
+    'display': 'block',
+
   },
-  children: [
-    {
-      type: "childElement",
-      className: "image",
-      properties: {
+  image: {
 
-      }
-    },
-    {
-      type: "childElement",
-      className: "properties",
-      properties: {
+  },
+  properties: {
 
-      },
-      children: [
-        {
-          type: "childElement",
-          className: "property",
-          properties: {
+  },
+  "prop-name": {
 
-          },
-          children: [
-            {
-              type: "childElement",
-              className: 'label',
-              properties: {
-                'display': 'none'
-              }
-            },
-            {
-              type: "childElement",
-              className: 'input',
-              properties: {
-                'border': 'none'
-              }
-            },
+  },
+  "prop-email": {
 
-          ]
-        }
-      ]
-    },
-    {
-      type: "childElement",
-      className: "children",
-      properties: {
-      },
-      children: [
-        {
-          type: "childElement",
-          className: "child",
-          properties: {
-          },
-          children: [
-          {
-            type: 'childElement',
-            className: "iconDiv",
-            properties: {
-            }
-          }
-          ]
-        }
-      ]
-    }
-  ]
+  },
+  "prop-bio": {
+
+  },
+  label: {
+
+  },
+  input: function(readOnly) {
+    return readOnly ? { border: 'none' } : {};
+  },
+  children: {
+
+  }
+
 }

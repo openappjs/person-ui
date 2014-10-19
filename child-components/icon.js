@@ -60,11 +60,11 @@ var FontIcon = function (options) {
 }
 
 FontIcon.render = function (state, events) {
-  return h('div.iconDiv', { style: nested(state, 'state.style.iconDiv.style') || null }, [
+  return h('div.icon', { style: style.icon }, [
     h('span', {className: state.model.iconName}),
     h('span.screen-reader-text', {
-      style: nested(state, 'state.style.iconDiv.screenReaderText.style') || screenReaderTextInlineStyle
-    }, nested(state, 'state.model.screenReaderText') || null)
+      style: screenReaderTextInlineStyle
+    }, state.model.screenReaderText)
   ]
   )
 };

@@ -1,7 +1,6 @@
-module.exports = function (options) {
-  var width = options.width,
-      height = options.height,
-      view = options.view;
+module.exports = function (parent, view) {
+  var width = parent.width,
+      height = parent.height;
 
   var styleObj = {
     listItemMobile: require('./listItemMobile'),

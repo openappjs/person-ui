@@ -2,11 +2,11 @@ var mercury = require('mercury');
 var Person = require('../');
 var Aviator = require('aviator');
 var fs = require('fs');
+var domready = require('domready');
 
 var insertCss = require('insert-css');
 var cfs = require('css-face-string');
 
-var Link = require('./child-components/link');
 var Icon = require('./child-components/icon');
 
 //insert styles and fonts
@@ -22,7 +22,7 @@ var fontAwesome = cfs.file({
 insertCss(fontAwesome)
 require('../index.css');
 
-//bootstrap child components
+//bootstrap child component
 var icon = Icon({
   model: {
     iconName: 'icon-arrow-right',
@@ -31,7 +31,14 @@ var icon = Icon({
     fontFamily: 'icons'
   },
   style: {
-    lineHeight: '32px',
+    icon: {
+      position: 'absolute',
+      'font-size': '32px',
+      'font-weight': 'bold',
+      top: '-14px',
+      right: '0px',
+      color: '#777777'      
+    }
   }
 }).state;
 
@@ -45,7 +52,7 @@ var mikey = {
     image: 'data:image/png;base64,' + fs.readFileSync(__dirname + "/images/ahdinosaur.jpeg", "base64")
   },
   children: [icon],
-  styles: require('../styles'),
+  styleController: require('../styles'),
   view: 'list-item'
 }
 
@@ -53,6 +60,7 @@ var mikey = {
 var ProfileTarget = {
   render: function (req) {
     mikey.view = 'profile';
+    mikey.children = [null];
     var personProfile = Person(mikey)
     var elem = document.getElementById('_'+mikey.model.id);
     elem.remove();
@@ -63,7 +71,7 @@ var ProfileTarget = {
 }
 
 //define simple routing 
-Aviator.pushStateEnabled = false;
+Aviator.pushStateEnabled = true;
 Aviator.setRoutes({
   '/people': {
     target: ProfileTarget,
@@ -83,9 +91,23 @@ mikey['commands'] = {
     }
 };
 
-//bootstrap person component
-var person = Person(mikey);
 
-//render app on body, trigger re-render on state change
-mercury.app(document.body, person.state, Person.render);
+
+domready(function() {
+  var elem = document.body;
+  mikey.parent = {
+    height: elem.clientHeight,
+    width: elem.clientWidth
+  };
+
+  console.log('mikey', mikey)
+
+  //bootstrap person component
+  var person = Person(mikey);
+
+  //render app on body, trigger re-render on state change
+  mercury.app(elem, person.state, Person.render);
+
+})
+
 

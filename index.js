@@ -8,10 +8,11 @@ var ElementQuery = require('element-query');
 
 function Person (options) {
   options = options || {};
-  var styles = options.styles || {};
+  var styleController = options.styleController;
   var config = options.config || {};
   var model = options.model || {};
   var commands = options.commands || {};
+  var parent = options.parent || {};
   var children = options.children || [];
   var view = options.view || {};
 
@@ -39,12 +40,13 @@ function Person (options) {
 
   // create state
   var state = mercury.struct({
+    parent: mercury.struct(parent),
     children: mercury.array(children),
     commands: mercury.value(commands),
     config: mercury.struct(config),
     entity: mercury.struct(entityStruct),
     editing: mercury.struct(editingStruct),
-    styles: mercury.value(styles),
+    styleController: mercury.value(styleController),
     events: events,
     view: mercury.value(view),
     render: mercury.value(Person.render),
@@ -105,15 +107,17 @@ Person.toggleEditProperty = function (propName, state) {
   };
 };
 
-Person.renderProperty = function (propName, state, events) {
-  var readOnly = !state.editing["prop-"+propName];
+Person.renderProperty = function (propName, state, events, style) {
+  var key = 'prop-' + propName;
+  var readOnly = !state.editing[key];
 
-  return h('div.property.prop-'+propName, {}, [
-    h('label.label', propName),
+  return h('div.property.prop-'+propName, { style: style[key] }, [
+    h('label.label', { style: style.label }, propName),
     h('input.input', {
+      style: style.input(readOnly),
       type: "text",
       name: propName,
-      value: state.entity["prop-"+propName],
+      value: state.entity[key],
       readOnly: readOnly,
       'ev-click': mercury.event(events["toggleEdit-"+propName]),
       'ev-event': mercury.changeEvent(events["change-"+propName])
@@ -121,8 +125,9 @@ Person.renderProperty = function (propName, state, events) {
   ]);
 };
 
-Person.renderImage = function (state, events) {
+Person.renderImage = function (state, events, style) {
   return h('img', {
+    style: style.img,
     src: state.entity['prop-image']
   })
 };
@@ -132,6 +137,7 @@ Person.render = function (state, events) {
 
   debug("render", state, events);
 
+  var style = state.styleController(state.parent, state.view);
   var children = [];
 
   for (var i = 0; i < state.children.length; i++) {
@@ -144,15 +150,17 @@ Person.render = function (state, events) {
   };
 
   return h('#_'+state.entity['prop-id']+'.ui.person', {
-    'ev-elementQuery': new ElementQuery(state.styles, state.view),
+    style: style.person,
     'ev-click': state.commands.click ? mercury.event(state.commands.click) : null
   }, [
-    h('.image', Person.renderImage(state, state.events)),
-    h('.properties', Person.properties.map(function (propName) {
-      if (propName !== ('image' || 'id')) { return Person.renderProperty(propName, state, state.events); }
+    h('.image', {style: style.image}, Person.renderImage(state, state.events, style)),
+    h('.properties', {style: style.properties}, Person.properties.map(function (propName) {
+      if (propName !== ('image' || 'id')) { 
+        return Person.renderProperty(propName, state, state.events, style); 
+      }
     })),
-    h('.children', children.map(function (child) {
-      return h('.child', child)
+    h('.children', {style: style.children}, children.map(function (child) {
+      return h('.child', {style: style.child}, child)
     }))
   ]);
 };

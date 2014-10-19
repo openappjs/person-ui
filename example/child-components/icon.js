@@ -48,10 +48,10 @@ var FontIcon = function (options) {
 };
 
 FontIcon.render = function (state, events) {
-  return h('div.iconDiv', { style: state.style }, [
+  return h('div.icon', { style: state.style.icon }, [
     h('span', {className: state.model.iconName}),
     h('span.screen-reader-text', {
-      style: state.style.screenReaderText || screenReaderTextInlineStyle
+      style: screenReaderTextInlineStyle
     }, state.model.screenReaderText )
   ]
   )
