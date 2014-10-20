@@ -152,7 +152,7 @@ Person.render = function (state, events) {
 
   return h('#_'+state.entity['prop-id']+'.ui.person', {
     style: style.person,
-    'ev-click': state.commands.click ? mercury.event(state.commands.click) : null
+    'ev-click': state.commands.click ? mercury.event(state.commands.click, {id: state.model.id}) : null
   }, [
     h('.image', {style: style.image}, Person.renderImage(state, state.events, style)),
     h('.properties', {style: style.properties}, Person.properties.map(function (propName) {
