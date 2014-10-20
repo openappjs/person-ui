@@ -156,8 +156,12 @@ Person.render = function (state, events) {
   }, [
     h('.image', {style: style.image}, Person.renderImage(state, state.events, style)),
     h('.properties', {style: style.properties}, Person.properties.map(function (propName) {
-      if (propName !== ('image' || 'id')) { 
-        return Person.renderProperty(propName, state, state.events, style); 
+      switch (propName) {
+        case 'image':
+        case 'id':
+          break;
+        default:
+          return Person.renderProperty(propName, state, state.events, style); 
       }
     })),
     h('.children', {style: style.children}, children.map(function (child) {

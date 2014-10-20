@@ -4,7 +4,6 @@ var h = mercury.h;
 var cssBuilder = require('css-builder');
 var b = cssBuilder();
 var insertCss = require('insert-css');
-var exists = require('check-nested');
 var extend = require('extend');
 
 screenReaderTextInlineStyle = {
