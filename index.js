@@ -3,8 +3,6 @@ var mercury = require('mercury');
 var _ = require('lodash');
 var fs = require('fs'); 
 var h = mercury.h;
-var ElementQuery = require('element-query');
-
 
 function Person (options) {
   options = options || {};
@@ -79,7 +77,7 @@ function Person (options) {
   return { state: state, events: events };
 }
 
-Person.properties = ["name", "email", "bio", "image", "id"];
+Person.properties = ["name", "handle", "email", "bio", "image", "id"];
 
 Person.click = function (state) {
   return function (data) {
@@ -111,21 +109,28 @@ Person.toggleEditProperty = function (propName, state) {
 Person.renderProperty = function (propName, state, events, style) {
   var key = 'prop-' + propName;
   var readOnly = !state.editing[key];
-  var view = state.view
+  var view = state.view;
 
   return h('div.property.prop-'+propName, { style: style[key] }, [
     h('label.label', { style: style.label }, propName),
     h('input.input', {
-      style: style.input(readOnly, view, propName),
+      style: style.input(readOnly, propName),
       type: "text",
       name: propName,
       value: state.entity[key],
-      readOnly: readOnly,
-      'ev-click': mercury.event(events["toggleEdit-"+propName]),
-      'ev-event': mercury.changeEvent(events["change-"+propName])
+      readOnly: readOnly
+      //disbled temporarily for craftodex
+      // 'ev-click': mercury.event(events["toggleEdit-"+propName]),
+      // 'ev-event': mercury.changeEvent(events["change-"+propName])
     }),
   ]);
 };
+
+Person.renderBio = function (state, events, style)  {
+  return h('div.property.prop-bio', { style: style['prop-bio'] }, [
+    h('p.bio', state.entity['prop-bio'])
+  ]);
+}
 
 Person.renderImage = function (state, events, style) {
   return h('img', {
@@ -161,6 +166,8 @@ Person.render = function (state, events) {
         case 'image':
         case 'id':
           break;
+        case 'bio':
+          return Person.renderBio(state, state.events, style);
         default:
           return Person.renderProperty(propName, state, state.events, style); 
       }
