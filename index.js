@@ -116,7 +116,7 @@ Person.renderProperty = function (propName, state, events, style) {
   return h('div.property.prop-'+propName, { style: style[key] }, [
     h('label.label', { style: style.label }, propName),
     h('input.input', {
-      style: style.input(readOnly, view),
+      style: style.input(readOnly, view, propName),
       type: "text",
       name: propName,
       value: state.entity[key],
