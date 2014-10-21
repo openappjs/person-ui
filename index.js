@@ -1,8 +1,16 @@
 var debug = require('debug')('person-ui');
 var mercury = require('mercury');
+var fs = require('fs'); 
 var h = mercury.h;
+var ElementQuery = require('element-query');
+
 
 function Person (options) {
+  options = options || {};
+  var styles = options.styles || {};
+  var config = options.config || {};
+  var model = options.model || {};
+  var commands = options.children.commands || [];
 
   // setup property state and events
   var eventNames = [];
@@ -22,10 +30,11 @@ function Person (options) {
 
   // create state
   var state = mercury.struct({
-    //TODO select config from multiple options logic
-    config: mercury.struct(require('./styles/listItemMobile')),
+    commands: mercury.array(commands),
+    config: mercury.struct(config),
     entity: mercury.struct(entityStruct),
     editing: mercury.struct(editingStruct),
+    styles: mercury.value(styles),
     events: events,
     render: mercury.value(Person.render),
   });
@@ -49,6 +58,12 @@ function Person (options) {
 
 Person.properties = ["name", "email", "bio", "image"];
 
+Person.changeViewAs = function (view, state) {
+  return function (data) {
+    //state.
+  }
+};
+
 Person.changeProperty = function (propName, state) {
   return function (data) {
     debug("changeProperty", propName, ":", data);
@@ -67,17 +82,14 @@ Person.renderProperty = function (propName, state, events) {
   var readOnly = !state.editing["prop-"+propName];
 
   return h('div.property.prop-'+propName, {}, [
-    h('label', {
-      style: state.config.person.properties.label.style
-    }, propName),
-    h('input', {
+    h('label.label', propName),
+    h('input.input', {
       type: "text",
       name: propName,
       value: state.entity["prop-"+propName],
       readOnly: readOnly,
-      style: state.config.person.properties.input.style(propName, readOnly),
       'ev-click': mercury.event(events["toggleEdit-"+propName]),
-      'ev-event': mercury.changeEvent(events["change-"+propName]),
+      'ev-event': mercury.changeEvent(events["change-"+propName])
     }),
   ]);
 };
@@ -91,17 +103,31 @@ Person.renderImage = function (state, events) {
 Person.render = function (state, events) {
   debug("render", state, events);
 
+  var commands = [];
+
+  for (var i = 0; i < state.commands.length; i++) {
+    var command = state.commands[i];
+    if (typeof command !== 'undefined') {
+      commands.push(
+        command && command.render && command.render(command) || command
+      );
+    }
+  };
+
+
   return h('div.ui.person', {
-    style: state.config.person.style
+    'ev-elementQuery': new ElementQuery(state.styles)
+    // "ev-click": function() {
+    //   console.log('person clicked')
+    // }
   }, [
-    h('div.image', {
-      style: state.config.person.image.style
-    }, Person.renderImage(state, events)),
-    h('div.properties', {
-      style: state.config.person.properties.style
-    }, Person.properties.map(function (propName) {
-      if (propName !== 'image') { return Person.renderProperty(propName, state, state.events); }
-    })),
+      h('div.image', Person.renderImage(state, events)),
+      h('div.properties', Person.properties.map(function (propName) {
+        if (propName !== 'image') { return Person.renderProperty(propName, state, state.events); }
+      })),
+      h('div.commands', commands.map(function (command) {
+        return h('.command', command)
+      }))
   ])
   ;
 };

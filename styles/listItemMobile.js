@@ -1,45 +1,58 @@
-function inputStyle(propName, readOnly) {
-  var displayed = {
-  'position': 'absolute',
-  'display': 'inline-block',
-  'top': 0 ,
-  'bottom': 0,
-  'margin': 'auto',
-  'height': '20px',
-  'left': '63px'
-  };
+var mercury = require('mercury');
+var Tag = require('meta-tags');
 
-  var hidden = {
-    'display': 'none'
-  };
+var tag = Tag({
+  model: {
+    Name: 'viewport',
+    content: 'width=device-width, initial-scale=1'
+  }
+});
 
-  if (propName === 'name') {
-    if (readOnly) {
-      displayed['border'] = 'none';
-      return displayed;   
-    } else {
-      return displayed;
-    }
-  } else {
-    return hidden;
-  };
+mercury.app(document.head, tag.state, Tag.render)
 
-};
+// function inputStyle(propName, readOnly) {
+//   var displayed = {
+//   'position': 'absolute',
+//   'display': 'inline-block',
+//   'top': 0 ,
+//   'bottom': 0,
+//   'margin': 'auto',
+//   'height': '20px',
+//   'left': '63px'
+//   };
 
+//   var hidden = {
+//     'display': 'none'
+//   };
 
+//   if (propName === 'name') {
+//     if (readOnly) {
+//       displayed['border'] = 'none';
+//       return displayed;   
+//     } else {
+//       return displayed;
+//     }
+//   } else {
+//     return hidden;
+//   };
+
+// };
 
 module.exports = {
-  person: {
-    // TODO add next arrow icon
-    style: {
-      'position': 'relative',
-      'display': 'block',
-      'padding': '10px 15px',
-      'margin-bottom': '-1px',
-      'height': '50px'
-    },
-    image: {
-      style: {
+  type: "Person-UI",
+  className: "person",
+  properties: {
+    'position': 'relative',
+    'display': 'block',
+    'padding': '10px 15px',
+    'margin-bottom': '-1px',
+    'height': '50px',
+  },
+  children: [
+    {
+      type: "childElement",
+      className: "image",
+      properties: {
         'position': 'absolute',
         'display':'inline-block',
         'width': '40px',
@@ -49,19 +62,68 @@ module.exports = {
         'margin': 'auto'
       }
     },
-    properties: {
-      style: {
+    {
+      type: "childElement",
+      className: "properties",
+      properties: {
         'display': 'inline-block',
         'padding-left': '8px'
       },
-      label: {
-        style: {
-          'display': 'none'          
-        }
+      children: [
+        {
+          type: "childElement",
+          className: "prop-name",
+          properties: {
+            'position': 'absolute',
+            'display': 'inline-block',
+            'top': 0 ,
+            'bottom': 0,
+            'margin': 'auto',
+            'height': '20px',
+            'left': '63px'
+          },
+          children: [
+            {
+              type: "childElement",
+              className: 'label',
+              properties: {
+                'display': 'none'
+              }
+            },
+            {
+              type: "childElement",
+              className: 'input',
+              properties: {
+                'border': 'none'
+              }
+            },
+
+          ]
+        },
+        {
+          type: "childElement",
+          className: {"not": {pattern: "prop-name"}},
+          properties: {
+            'display': 'none',
+          }
+        },
+      ]
+    },
+    {
+      type: "childElement",
+      className: "commands",
+      properties: {
+        'position': 'relative'
       },
-      input: {
-        style: inputStyle
-      }
+      children: [
+        {
+          type: "childElement",
+          className: "command",
+          properties: {
+            'height': "32px"
+          }
+        }
+      ]
     }
-  }
+  ]
 }
