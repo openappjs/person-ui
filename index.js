@@ -111,11 +111,12 @@ Person.toggleEditProperty = function (propName, state) {
 Person.renderProperty = function (propName, state, events, style) {
   var key = 'prop-' + propName;
   var readOnly = !state.editing[key];
+  var view = state.view
 
   return h('div.property.prop-'+propName, { style: style[key] }, [
     h('label.label', { style: style.label }, propName),
     h('input.input', {
-      style: style.input(readOnly),
+      style: style.input(readOnly, view),
       type: "text",
       name: propName,
       value: state.entity[key],
