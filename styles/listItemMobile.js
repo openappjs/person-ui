@@ -50,8 +50,8 @@ module.exports = {
   image: {
     'position': 'absolute',
     'display':'inline-block',
-    'width': '40px',
-    'height': '40px',
+    'width': '48px',
+    'height': '48px',
     'top': 0,
     'bottom': 0,
     'margin': 'auto'
@@ -63,11 +63,11 @@ module.exports = {
   "prop-name": {
     'position': 'absolute',
     'display': 'inline-block',
-    'top': 0 ,
-    'bottom': 0,
+    'font-size': '20px',
+    'top': '24px',
     'margin': 'auto',
     'height': '20px',
-    'left': '63px'
+    'left': '75px'
   },
   "prop-email": {
     display: 'none'
@@ -79,7 +79,7 @@ module.exports = {
     'display': 'none'
   },
   input: function(readOnly) {
-    return readOnly ? { border: 'none' } : {};
+    return readOnly ? { border: 'none', cursor: 'pointer' } : {};
   },
   children: {
     'position': 'relative'

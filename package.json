@@ -4,7 +4,9 @@
   "description": "person user interface",
   "main": "index.js",
   "scripts": {
-    "example": "beefy -p 5000 example/app.js",
+    "serve": "beefy -p 5000 example/app.js:bundle.js --index example/index.html",
+    "config": "node example/config.js",
+    "example": "npm run config && npm run serve",
     "test": "node test/index.js"
   },
   "browserify": {
@@ -26,17 +28,13 @@
   "homepage": "https://github.com/openappjs/person-ui",
   "dependencies": {
     "absurd": "^0.3.31",
-    "abyssa": "^6.6.0",
     "aviator": "^0.4.3",
-    "brfs": "^1.2.0",
-    "check-nested": "0.0.3",
     "css-builder": "0.0.7",
     "css-face-string": "0.0.2",
     "css-stringify": "^2.0.0",
     "css.escape": "^0.2.1",
     "debug": "^1.0.4",
     "domready": "^1.0.7",
-    "element-query": "git://github.com/openappjs/element-query",
     "extend": "^1.3.0",
     "font-awesome": "^4.2.0",
     "geval": "^2.1.1",
@@ -51,6 +49,7 @@
     "tape": "^2.14.0"
   },
   "devDependencies": {
+    "atomify-css": "^3.2.0",
     "beefy": "^2.1.0",
     "bff": "^0.1.5",
     "cssify": "^0.5.1",
@@ -58,7 +57,7 @@
     "envify": "^2.0.1",
     "brfs": "^1.2.0",
     "debug": "^1.0.4",
-    "mercury": "^6.0.1",
+    "mercury-fa": "git://github.com/openappjs/mercury-fa",
     "setimmediate": "^1.0.2",
     "global": "^4.2.1",
     "isarray": "0.0.1",

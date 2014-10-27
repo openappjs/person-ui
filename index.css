@@ -14,7 +14,7 @@ img {
 }
 
 input[type="text"] {
-    font-size: 17px;
+    font-size: inherit;
     color: #777777;
 }
 
