@@ -156,7 +156,7 @@ Person.render = function (state, events) {
     }
   };
 
-  return h('#_'+state.entity['prop-id']+'.ui.person', {
+  return h('#_'+state.entity['prop-id']+'.ui.person.'+state.view, {
     style: style.person,
     'ev-click': state.commands.click ? mercury.event(state.commands.click, {id: state.entity['prop-id']}) : null
   }, [
