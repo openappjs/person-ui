@@ -23,9 +23,9 @@ function Person (options) {
   Person.properties.forEach(function (propName) {
     entityStruct["prop-"+propName] = mercury.value(options.model[propName]);
     switch (propName) {
-      case 'image':
-        break;
       case 'id':
+      case 'image':
+      case 'location':
         break;
       default:
         eventNames.push("change-"+propName);
@@ -58,9 +58,9 @@ function Person (options) {
   // define events
   Person.properties.forEach(function (propName) {
     switch (propName) {
-      case 'image':
-        break;
       case 'id':
+      case 'image':
+      case 'location':
         break;
       default:
         events["change-"+propName](
@@ -77,7 +77,7 @@ function Person (options) {
   return { state: state, events: events };
 }
 
-Person.properties = ["name", "handle", "email", "bio", "image", "id"];
+Person.properties = ["name", "handle", "email", "bio", "location", "image", "id"];
 
 Person.click = function (state) {
   return function (data) {
@@ -109,9 +109,9 @@ Person.toggleEditProperty = function (propName, state) {
 Person.renderProperty = function (propName, state, events, style) {
   var key = 'prop-' + propName;
   var readOnly = !state.editing[key];
-  var view = state.view;
+  var classList = style.classList[key] ? style.classList[key].join('.') : '';
 
-  return h('div.property.prop-'+propName, { style: style[key] }, [
+  return h('div.property.prop-'+propName+classList, { style: style[key] }, [
     h('label.label', { style: style.label }, propName),
     h('input.input', {
       style: style.input(readOnly, propName),
@@ -127,17 +127,29 @@ Person.renderProperty = function (propName, state, events, style) {
 };
 
 Person.renderBio = function (state, events, style)  {
-  return h('div.property.prop-bio', { style: style['prop-bio'] }, [
+  var classList = style.classList['prop-bio'] ? style.classList['prop-bio'].join('.') : '';
+
+  return h('div.property.prop-bio'+classList, { style: style['prop-bio'] }, [
     h('p.bio', state.entity['prop-bio'])
   ]);
-}
+};
 
 Person.renderImage = function (state, events, style) {
-  return h('img', {
+  var classList = style.classList.image ? style.classList.image.join('.') : '';
+
+  return h('img'+classList, {
     style: style.img,
     src: state.entity['prop-image']
   })
 };
+
+Person.renderLocation = function (state, events, style)  {
+  var classList = style.classList['prop-location'] ? style.classList['prop-location'].join('.') : '';
+
+  return h('div.property.prop-location'+classList, { style: style['prop-bio'] }, [
+    h('p.bio', state.entity['prop-bio'])
+  ]);
+}
 
 Person.render = function (state, events) {
   console.log('rendering ', state, events)
@@ -145,6 +157,7 @@ Person.render = function (state, events) {
   debug("render", state, events);
 
   var style = state.styleController(state.parent, state.view);
+  var classList = style.classList.person ? style.classList.person.join('.') : '';
   var children = [];
 
   for (var i = 0; i < state.children.length; i++) {
@@ -163,11 +176,13 @@ Person.render = function (state, events) {
     h('.image', {style: style.image}, Person.renderImage(state, state.events, style)),
     h('.properties', {style: style.properties}, Person.properties.map(function (propName) {
       switch (propName) {
-        case 'image':
         case 'id':
+        case 'image':
           break;
         case 'bio':
           return Person.renderBio(state, state.events, style);
+        case 'location':
+          return Person.renderLocation(state, state.events, style);
         default:
           return Person.renderProperty(propName, state, state.events, style); 
       }

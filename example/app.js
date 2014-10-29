@@ -37,10 +37,14 @@ var mikey = {
     name: "Mikey Williams",
     email: "dinosaur@example.com",
     bio: "a human from planet earth",
-    image: "http://gravatar.com/avatar/22ee24b84d0a2a9446fc9c0fe0652c46?d=identicon"
+    image: "http://gravatar.com/avatar/22ee24b84d0a2a9446fc9c0fe0652c46?d=identicon",
+    location: [
+      { id: "http://sws.geonames.org/5332921/", name: 'California' },
+      { id: "http://sws.geonames.org/2186224/", name: 'New Zealand' }
+    ]
   },
   children: [icon],
-  styleController: require('../styles'),
+  styleController: require('../style-controller'),
   view: 'list-item'
 }
 
@@ -83,6 +87,7 @@ mikey['commands'] = {
 
 domready(function() {
   var elem = document.body;
+  //pass parent elem size attributes into child component for responsive styling purposes (unused)
   mikey.parent = {
     height: elem.clientHeight,
     width: elem.clientWidth
