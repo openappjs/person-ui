@@ -43,6 +43,14 @@ var mikey = {
       { id: "http://sws.geonames.org/2186224/", name: 'New Zealand' }
     ]
   },
+  config: {
+    id: {renderAs: null},
+    name: {renderAs: 'input'},
+    email: {renderAs: null},
+    bio: {renderAs: null},
+    image: {renderAs: 'img'},
+    location: {renderAs: null}
+  }
   children: [icon],
   styleController: require('../style-controller'),
   view: 'list-item'
@@ -51,8 +59,9 @@ var mikey = {
 
 var ProfileTarget = {
   render: function (req) {
+    mikey.config = require('./profile-config');
     mikey.view = 'profile';
-    mikey.children = [null];
+    mikey.children.length  = 0;
     var personProfile = Person(mikey)
     var elem = document.getElementById('_'+mikey.model.id);
     elem.remove();

@@ -2,13 +2,18 @@ var debug = require('debug')('person-ui');
 var mercury = require('mercury');
 var _ = require('lodash');
 var fs = require('fs'); 
+var renderChildren = require('./lib/render-children');
+var renderInput = require('./lib/render-input');
+var renderImage = require('./lib/render-image');
+var renderP     = requie('./lib/render-p');
+var renderA     = require('./lib/render-a');
 var h = mercury.h;
 
 function Person (options) {
   options = options || {};
   var styleController = options.styleController;
   var config = options.config || {};
-  var model = options.model || {};
+  var model = {};
   //TODO commands -> events
   var commands = options.commands || {};
   var parent = options.parent || {};
@@ -17,11 +22,10 @@ function Person (options) {
 
   // setup property state and events
   var eventNames = [];
-  var entityStruct = {};
   var editingStruct = {};
 
   Person.properties.forEach(function (propName) {
-    entityStruct["prop-"+propName] = mercury.value(options.model[propName]);
+    model[propName] = mercury.value(options.model[propName]);
     switch (propName) {
       case 'id':
       case 'image':
@@ -43,7 +47,7 @@ function Person (options) {
     children: mercury.array(children),
     commands: mercury.value(commands),
     config: mercury.struct(config),
-    entity: mercury.struct(entityStruct),
+    model: mercury.struct(model),
     editing: mercury.struct(editingStruct),
     styleController: mercury.value(styleController),
     events: events,
@@ -157,40 +161,57 @@ Person.render = function (state, events) {
   debug("render", state, events);
 
   var style = state.styleController(state.parent, state.view);
-  var classList = style.classList.person ? style.classList.person.join('.') : '';
-  var children = [];
+  var elements = Person.properties.map(function(propName) {
+    var config = state.config[propName];
+    var options = {
+      key: propName,
+      value: state.model[propName],
+      style: style
+    };
+    switch (config.renderAs) {
+      case 'input':
+        options = _.extend(options, { className: ['property', 'prop-'+propName] })
+        renderInput(options);
+        break;
+      case 'img':
+        options = _.extend(options, { className: 'image' })
+        renderImage(options);
+        break;
+      case 'p':
+        options = _.extend(options, { className: ['property', 'prop-'+propName] })
+        renderP(options);
+      case 'a':
+        options = _.extend(options, { className: []});
+        renderA(options);
 
-  for (var i = 0; i < state.children.length; i++) {
-    var child = state.children[i];
-    if (typeof child !== 'undefined') {
-      children.push(
-        child && child.render && child.render(child) || child
-      );
     }
-  };
+  });
 
-  return h('#_'+state.entity['prop-id']+'.ui.person.'+state.view, {
-    style: style.person,
-    'ev-click': state.commands.click ? mercury.event(state.commands.click, {id: state.entity['prop-id']}) : null
-  }, [
-    h('.image', {style: style.image}, Person.renderImage(state, state.events, style)),
-    h('.properties', {style: style.properties}, Person.properties.map(function (propName) {
-      switch (propName) {
-        case 'id':
-        case 'image':
-          break;
-        case 'bio':
-          return Person.renderBio(state, state.events, style);
-        case 'location':
-          return Person.renderLocation(state, state.events, style);
-        default:
-          return Person.renderProperty(propName, state, state.events, style); 
-      }
-    })),
-    h('.children', {style: style.children}, children.map(function (child) {
-      return h('.child', {style: style.child}, child)
-    }))
-  ]);
+  if (state.children.length > 0) renderChildren(elements, state.children);
+
+  return h('#_'+state.entity['prop-id']+'.ui.person.'+state.view, 
+    {
+      style: style.person,
+      'ev-click': state.commands.click ? mercury.event(state.commands.click, {id: state.entity['prop-id']}) : null
+    },
+    elements, 
+  // [
+  //   // h('.image', {style: style.image}, Person.renderImage(state, state.events, style)),
+  //   // h('.properties', {style: style.properties}, Person.properties.map(function (propName) {
+  //   //   switch (propName) {
+  //   //     case 'id':
+  //   //     case 'image':
+  //   //       break;
+  //   //     case 'bio':
+  //   //       return Person.renderBio(state, state.events, style);
+  //   //     case 'location':
+  //   //       return Person.renderLocation(state, state.events, style);
+  //   //     default:
+  //   //       return Person.renderProperty(propName, state, state.events, style); 
+  //   //   }
+  //   // }))
+  // ]
+  );
 };
 
 module.exports = Person;
