@@ -31,7 +31,7 @@ module.exports = {
     'bottom': 0,
     'margin': 'auto',
     'height': '20px',
-    'left': '72px'
+    'left': '75px'
   },
   "email": {
     display: 'none'

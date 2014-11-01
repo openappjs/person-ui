@@ -23,8 +23,8 @@ var icon = Icon({
       position: 'absolute',
       'font-size': '24px',
       'font-weight': 'bold',
-      top: '-9px',
-      right: '0px',
+      top: '22px',
+      right: '10px',
       color: '#777777'      
     }
   }
@@ -68,7 +68,6 @@ var ProfileTarget = {
     var elem = document.getElementById('_'+mikey.model.id);
     elem.remove();
     mercury.app(document.body, personProfile.state, Person.render);
-    console.log('history', history.state)
 
   }
 }

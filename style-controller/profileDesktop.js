@@ -27,27 +27,32 @@ module.exports = {
   img : {
     "border-radius": "8px"
   },
-  properties: {
-    display: 'flex',
-    "flex-direction": "column",
-    'margin': '10px 5px 10px'
-  },
   "name": {
+    "margin-left": "10px",
+    "margin-top": '5px',
+    order: 1,
   },
   "handle": {
-    "margin-top": "-3p"
+    order: 2,
+    "margin-top": "-3p",
+    "margin-left": "10px"
   },
   "email": {
-
   },
   "bio": {
+    order: 3,
     "max-width": "275px",
     "font-size": "14px",
     "font-weight": "400",
     "line-height": "20px",
     "margin-bottom": "10px",
-    "margin-right": "10px",
+    "margin-left": "10px",
     "word-wrap": "break-word"
+  },
+  "location": {
+    order: 4,
+    "margin-bottom": "10px",
+    "margin-left": "10px",
   },
   label: {
     display: 'none'

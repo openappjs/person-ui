@@ -8,16 +8,25 @@ var renderImage = require('./lib/render-image');
 var renderP     = require('./lib/render-p');
 var renderA     = require('./lib/render-a');
 var mercuryBlackList = ["name", "_diff", "_type", "_version"];
-var blackSwap = function(obj, blackList) {
-  var keys = Object.keys(obj);
-  keys.forEach(function(key) {
-    if (blackList.indexOf(key) !== -1) {
-      obj['_'+key] = obj[key];
-      delete obj[key]
+var blackSwap = function(test, blackList) {
+  if (typeof test === 'object') {
+    var keys = Object.keys(test);
+    keys.forEach(function(key) {
+      if (blackList.indexOf(key) !== -1) {
+        test['_'+key] = test[key];
+        delete test[key]
+      }
+    });
+    return test;
+  } else {
+    if (blackList.indexOf(test) !== -1) {
+      return '_'+test;
+    } else {
+      return test;
     }
-  });
-  return obj;
-}
+  }
+};
+
 var h = mercury.h;
 
 function Person (options) {
@@ -178,6 +187,7 @@ Person.render = function (state, events) {
   style = blackSwap(style, mercuryBlackList);
 
   Person.properties.forEach(function(propName) {
+    propName = blackSwap(propName, mercuryBlackList);
     var config = state.config[propName];
     var renderAs = config? config.renderAs : null;
     if (renderAs) {
@@ -198,13 +208,17 @@ Person.render = function (state, events) {
         case 'p':
           options = _.extend(options, { className: ['property', propName] })
           elements.push(renderP(options));
+          break;
         case 'a':
           options = _.extend(options, { className: []});
           elements.push(renderA(options));
+          break;
         default:
+          console.log('renderAs deafult', renderAs, options)
           elements.push(
             h('p', { style: {display: 'none'} }, state.model[propName] )
           );
+          break;
       }      
     } else if (typeof state.model[propName] === 'string') {
       elements.push(
