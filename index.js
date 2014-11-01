@@ -5,8 +5,19 @@ var fs = require('fs');
 var renderChildren = require('./lib/render-children');
 var renderInput = require('./lib/render-input');
 var renderImage = require('./lib/render-image');
-var renderP     = requie('./lib/render-p');
+var renderP     = require('./lib/render-p');
 var renderA     = require('./lib/render-a');
+var mercuryBlackList = ["name", "_diff", "_type", "_version"];
+var blackSwap = function(obj, blackList) {
+  var keys = Object.keys(obj);
+  keys.forEach(function(key) {
+    if (blackList.indexOf(key) !== -1) {
+      obj['_'+key] = obj[key];
+      delete obj[key]
+    }
+  });
+  return obj;
+}
 var h = mercury.h;
 
 function Person (options) {
@@ -37,6 +48,9 @@ function Person (options) {
         eventNames.push("toggleEdit-"+propName);
     }
   });
+
+  model = blackSwap(model, mercuryBlackList);
+  config = blackSwap(config, mercuryBlackList);
 
   eventNames.push('click')
   var events = mercury.input(eventNames);
@@ -157,44 +171,56 @@ Person.renderLocation = function (state, events, style)  {
 
 Person.render = function (state, events) {
   console.log('rendering ', state, events)
-
   debug("render", state, events);
+  var style = state.styleController(state.parent, state.view),
+      elements = [];
+  
+  style = blackSwap(style, mercuryBlackList);
 
-  var style = state.styleController(state.parent, state.view);
-  var elements = Person.properties.map(function(propName) {
+  Person.properties.forEach(function(propName) {
     var config = state.config[propName];
-    var options = {
-      key: propName,
-      value: state.model[propName],
-      style: style
-    };
-    switch (config.renderAs) {
-      case 'input':
-        options = _.extend(options, { className: ['property', 'prop-'+propName] })
-        renderInput(options);
-        break;
-      case 'img':
-        options = _.extend(options, { className: 'image' })
-        renderImage(options);
-        break;
-      case 'p':
-        options = _.extend(options, { className: ['property', 'prop-'+propName] })
-        renderP(options);
-      case 'a':
-        options = _.extend(options, { className: []});
-        renderA(options);
-
+    var renderAs = config? config.renderAs : null;
+    if (renderAs) {
+      var options = {
+        key: propName,
+        value: state.model[propName],
+        style: style
+      };
+      switch (renderAs) {
+        case 'input':
+          options = _.extend(options, { className: ['property', propName] })
+          elements.push(renderInput(options));
+          break;
+        case 'img':
+          options = _.extend(options, { className: 'image' })
+          elements.push(renderImage(options));
+          break;
+        case 'p':
+          options = _.extend(options, { className: ['property', propName] })
+          elements.push(renderP(options));
+        case 'a':
+          options = _.extend(options, { className: []});
+          elements.push(renderA(options));
+        default:
+          elements.push(
+            h('p', { style: {display: 'none'} }, state.model[propName] )
+          );
+      }      
+    } else if (typeof state.model[propName] === 'string') {
+      elements.push(
+        h('p', { style: {display: 'none'} }, state.model[propName] )
+      );
     }
   });
 
   if (state.children.length > 0) renderChildren(elements, state.children);
 
-  return h('#_'+state.entity['prop-id']+'.ui.person.'+state.view, 
+  return h('#_'+state.model.id+'.ui.person.'+state.view, 
     {
       style: style.person,
-      'ev-click': state.commands.click ? mercury.event(state.commands.click, {id: state.entity['prop-id']}) : null
+      'ev-click': state.commands.click ? mercury.event(state.commands.click, {id: state.model.id }) : null
     },
-    elements, 
+    elements 
   // [
   //   // h('.image', {style: style.image}, Person.renderImage(state, state.events, style)),
   //   // h('.properties', {style: style.properties}, Person.properties.map(function (propName) {

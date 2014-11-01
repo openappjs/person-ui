@@ -35,6 +35,7 @@ var mikey = {
   model: {
     id: 1,
     name: "Mikey Williams",
+    handle: 'ahdinosaur',
     email: "dinosaur@example.com",
     bio: "a human from planet earth",
     image: "http://gravatar.com/avatar/22ee24b84d0a2a9446fc9c0fe0652c46?d=identicon",
@@ -46,11 +47,12 @@ var mikey = {
   config: {
     id: {renderAs: null},
     name: {renderAs: 'input'},
+    handle: {renderAs: null},
     email: {renderAs: null},
     bio: {renderAs: null},
     image: {renderAs: 'img'},
     location: {renderAs: null}
-  }
+  },
   children: [icon],
   styleController: require('../style-controller'),
   view: 'list-item'

@@ -32,15 +32,15 @@ module.exports = {
     "flex-direction": "column",
     'margin': '10px 5px 10px'
   },
-  "prop-name": {
+  "name": {
   },
-  "prop-handle": {
+  "handle": {
     "margin-top": "-3p"
   },
-  "prop-email": {
+  "email": {
 
   },
-  "prop-bio": {
+  "bio": {
     "max-width": "275px",
     "font-size": "14px",
     "font-weight": "400",
@@ -97,7 +97,7 @@ module.exports = {
 
   },
   classList : {
-    'prop-location': ['test']
+    'location': ['test']
   }
 
 }

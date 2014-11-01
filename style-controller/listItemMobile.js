@@ -24,7 +24,7 @@ module.exports = {
     'display': 'inline-block',
     'padding-left': '8px'
   },
-  "prop-name": {
+  "name": {
     'position': 'absolute',
     'display': 'inline-block',
     'top': 0 ,
@@ -33,13 +33,13 @@ module.exports = {
     'height': '20px',
     'left': '72px'
   },
-  "prop-email": {
+  "email": {
     display: 'none'
   },
-  "prop-bio": {
+  "bio": {
     display: "none"
   },
-  "prop-handle": {
+  "handle": {
     display: "none"
   },
   label: {
