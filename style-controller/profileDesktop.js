@@ -37,7 +37,12 @@ module.exports = {
     "margin-top": "-3p",
     "margin-left": "10px"
   },
+  "property": {
+    "margin-bottom": "10px",
+    "margin-left": "10px",
+  },
   "email": {
+    order: 5
   },
   "bio": {
     order: 3,
@@ -50,9 +55,7 @@ module.exports = {
     "word-wrap": "break-word"
   },
   "location": {
-    order: 4,
-    "margin-bottom": "10px",
-    "margin-left": "10px",
+    order: 4
   },
   label: {
     display: 'none'

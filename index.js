@@ -194,33 +194,32 @@ Person.render = function (state, events) {
       var options = {
         key: propName,
         value: state.model[propName],
-        style: style
+        style: style,
+        className: config.className ? config.className : []
       };
+      console.log('options', options)
+      options.className.push('property', propName);
       switch (renderAs) {
         case 'input':
-          options = _.extend(options, { className: ['property', propName] })
           elements.push(renderInput(options));
           break;
         case 'img':
-          options = _.extend(options, { className: 'image' })
           elements.push(renderImage(options));
           break;
         case 'p':
-          options = _.extend(options, { className: ['property', propName] })
           elements.push(renderP(options));
           break;
         case 'a':
-          options = _.extend(options, { className: []});
           elements.push(renderA(options));
           break;
         default:
-          console.log('renderAs deafult', renderAs, options)
           elements.push(
             h('p', { style: {display: 'none'} }, state.model[propName] )
           );
           break;
       }      
     } else if (typeof state.model[propName] === 'string') {
+      //assumes model value is string
       elements.push(
         h('p', { style: {display: 'none'} }, state.model[propName] )
       );
