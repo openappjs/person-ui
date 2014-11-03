@@ -14,14 +14,26 @@ img {
   border: 0;
 }
 
-input[type="text"] {
+
+input {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: inherit;
     color: #333;
+    width:100%;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box; 
+    text-align: 
 }
 
 a {
   text-decoration: none;
   color: #333;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 /* module */
@@ -30,12 +42,24 @@ a {
 
 .fa:before {
   padding-right: 5px;
+  color: #707070
+}
+
+.fa.fa-send:before {
+  margin-top: 5px;
+}
+
+.handle {
+  color: #707070
 }
 
 .ui.person.list-item {
   border: 1px solid #ddd;
 }
 
+.ui.person.profile > .property {
+  margin-bottom: 4px;
+}
 
 
 

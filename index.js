@@ -133,51 +133,6 @@ Person.toggleEditProperty = function (propName, state) {
   };
 };
 
-Person.renderProperty = function (propName, state, events, style) {
-  var key = 'prop-' + propName;
-  var readOnly = !state.editing[key];
-  var classList = style.classList[key] ? style.classList[key].join('.') : '';
-
-  return h('div.property.prop-'+propName+classList, { style: style[key] }, [
-    h('label.label', { style: style.label }, propName),
-    h('input.input', {
-      style: style.input(readOnly, propName),
-      type: "text",
-      name: propName,
-      value: state.entity[key],
-      readOnly: readOnly
-      //disbled temporarily for craftodex
-      // 'ev-click': mercury.event(events["toggleEdit-"+propName]),
-      // 'ev-event': mercury.changeEvent(events["change-"+propName])
-    }),
-  ]);
-};
-
-Person.renderBio = function (state, events, style)  {
-  var classList = style.classList['prop-bio'] ? style.classList['prop-bio'].join('.') : '';
-
-  return h('div.property.prop-bio'+classList, { style: style['prop-bio'] }, [
-    h('p.bio', state.entity['prop-bio'])
-  ]);
-};
-
-Person.renderImage = function (state, events, style) {
-  var classList = style.classList.image ? style.classList.image.join('.') : '';
-
-  return h('img'+classList, {
-    style: style.img,
-    src: state.entity['prop-image']
-  })
-};
-
-Person.renderLocation = function (state, events, style)  {
-  var classList = style.classList['prop-location'] ? style.classList['prop-location'].join('.') : '';
-
-  return h('div.property.prop-location'+classList, { style: style['prop-bio'] }, [
-    h('p.bio', state.entity['prop-bio'])
-  ]);
-}
-
 Person.render = function (state, events) {
   console.log('rendering ', state, events)
   debug("render", state, events);
@@ -189,7 +144,7 @@ Person.render = function (state, events) {
   Person.properties.forEach(function(propName) {
     propName = blackSwap(propName, mercuryBlackList);
     var config = state.config[propName];
-    var renderAs = config? config.renderAs : null;
+    var renderAs = config ? config.renderAs : null;
     if (renderAs) {
       var options = {
         key: propName,
@@ -234,6 +189,11 @@ Person.render = function (state, events) {
       'ev-click': state.commands.click ? mercury.event(state.commands.click, {id: state.model.id }) : null
     },
     elements 
+  );
+};
+
+module.exports = Person;
+
   // [
   //   // h('.image', {style: style.image}, Person.renderImage(state, state.events, style)),
   //   // h('.properties', {style: style.properties}, Person.properties.map(function (propName) {
@@ -250,7 +210,3 @@ Person.render = function (state, events) {
   //   //   }
   //   // }))
   // ]
-  );
-};
-
-module.exports = Person;

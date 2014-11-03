@@ -22,27 +22,25 @@ module.exports = {
     "box-shadow": "0 1px 1px rgba(136,153,166,0.15)",
     height: "200px",
     position: "relative",
-    width: "200px"
+    width: "200px",
+    "margin-left": "-5px"
   },
   img : {
     "border-radius": "8px"
   },
   "name": {
-    "margin-left": "10px",
-    "margin-top": '5px',
+    "margin-top": '8px',
     order: 1,
   },
   "handle": {
     order: 2,
     "margin-top": "-3p",
-    "margin-left": "10px"
   },
   "property": {
-    "margin-bottom": "10px",
-    "margin-left": "10px",
   },
   "email": {
-    order: 5
+    order: 5,
+    display: 'flex'
   },
   "bio": {
     order: 3,
@@ -51,7 +49,6 @@ module.exports = {
     "font-weight": "400",
     "line-height": "20px",
     "margin-bottom": "10px",
-    "margin-left": "10px",
     "word-wrap": "break-word"
   },
   "location": {
@@ -64,7 +61,7 @@ module.exports = {
 
   },
   input: function(readOnly, propName) {
-    var display = readOnly ? 'none' : 'inline-block';
+    // var display = readOnly ? 'none' : 'inline-block';
     var border = readOnly ? 'none' : 'solid';
 
     var name = {
@@ -76,17 +73,13 @@ module.exports = {
     };
 
     var handle = {
-      color: "#707070",
       "margin-top": "2px",
-      "font-weight": "700",
-      "font-size": "14px",
       "line-height": "1",
       "word-wrap": "break-word",
       'border': border
     };
 
     var blank = { 
-      display: display,
       border: border
     }
 
@@ -95,8 +88,6 @@ module.exports = {
         return name;
       case 'handle':
         return handle;
-      // case  'bio':
-      //   return bio;
       default:
         return blank;
     }; 
