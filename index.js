@@ -142,13 +142,13 @@ Person.render = function (state, events) {
   style = blackSwap(style, mercuryBlackList);
 
   Person.properties.forEach(function(propName) {
-    propName = blackSwap(propName, mercuryBlackList);
-    var config = state.config[propName];
+    var _propName = blackSwap(propName, mercuryBlackList);
+    var config = state.config[_propName];
     var renderAs = config ? config.renderAs : null;
     if (renderAs) {
       var options = {
         key: propName,
-        value: state.model[propName],
+        value: state.model[_propName],
         style: style,
         className: config.className ? config.className : []
       };
@@ -169,14 +169,14 @@ Person.render = function (state, events) {
           break;
         default:
           elements.push(
-            h('p', { style: {display: 'none'} }, state.model[propName] )
+            h('p', { style: {display: 'none'} }, state.model[_propName] )
           );
           break;
       }      
-    } else if (typeof state.model[propName] === 'string') {
+    } else if (typeof state.model[_propName] === 'string') {
       //assumes model value is string
       elements.push(
-        h('p', { style: {display: 'none'} }, state.model[propName] )
+        h('p', { style: {display: 'none'} }, state.model[_propName] )
       );
     }
   });
