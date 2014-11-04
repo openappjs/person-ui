@@ -147,7 +147,7 @@ Person.render = function (state, events) {
     var renderAs = config ? config.renderAs : null;
     if (renderAs) {
       var options = {
-        key: propName,
+        key: _propName,
         value: state.model[_propName],
         style: style,
         className: config.className ? config.className : []
