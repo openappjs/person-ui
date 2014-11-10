@@ -134,7 +134,6 @@ Person.toggleEditProperty = function (propName, state) {
 };
 
 Person.render = function (state, events) {
-  console.log('rendering ', state, events)
   debug("render", state, events);
   var style = state.styleController(state.parent, state.view),
       elements = [];

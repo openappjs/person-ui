@@ -3,8 +3,8 @@ module.exports = function (parent, view) {
       height = parent.height;
 
   var styleObj = {
-    listItemMobile: require('./listItemMobile'),
-    profileDesktop: require('./profileDesktop')
+    listItemMobile: require('./list-item-desktop'),
+    profileDesktop: require('./profile-desktop')
   };
 
   //element query logic
