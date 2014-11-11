@@ -2,7 +2,8 @@
 
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  color: #777777;
+  color: #333;
+  font-size: 14px;
 }
 
 img {
@@ -13,14 +14,53 @@ img {
   border: 0;
 }
 
-input[type="text"] {
-    font-size: 17px;
-    color: #777777;
+
+input {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: inherit;
+    color: #333;
+    width:100%;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box; 
+    text-align: 
+}
+
+a {
+  text-decoration: none;
+  color: #333;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 /* module */
 
-.ui.person {
-  background-color: #fff;
+/* module */
+
+.fa:before {
+  padding-right: 5px;
+  color: #707070
+}
+
+.fa.fa-send:before {
+  margin-top: 5px;
+}
+
+.handle {
+  color: #707070
+}
+
+.ui.person.list-item {
   border: 1px solid #ddd;
 }
+
+.ui.person.profile > .property {
+  margin-bottom: 4px;
+}
+
+
+
+

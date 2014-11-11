@@ -4,11 +4,38 @@ var raf = require('raf');
 var fs = require('fs');
 // var event = require('synthetic-dom-events');
 var document = require('global/document');
-var isArray = require('isarray');
+var isArray = require('is-array');
 
 var Person = require('../');
 
-var listItemMobile = require('../styles/listItemMobile');
+var listItemDesktop = require('../style-controller/list-item-desktop');
+
+var mikey = {
+  model: {
+    id: 1,
+    name: "Mikey Williams",
+    handle: 'ahdinosaur',
+    email: "dinosaur@example.com",
+    bio: "a human from planet earth",
+    image: "http://gravatar.com/avatar/22ee24b84d0a2a9446fc9c0fe0652c46?d=identicon",
+    location: [
+      { id: "http://sws.geonames.org/5332921/", name: 'California' },
+      { id: "http://sws.geonames.org/2186224/", name: 'New Zealand' }
+    ]
+  },
+  config: {
+    id: {renderAs: null},
+    name: {renderAs: 'input'},
+    handle: {renderAs: null},
+    email: {renderAs: null},
+    bio: {renderAs: null},
+    image: {renderAs: 'img'},
+    location: {renderAs: null}
+  },
+  styleController: require('../style-controller'),
+  view: 'list-item'
+}
+
 
 function testElementStyle (t, element, styleSpec) {
   for (prop in styleSpec) {
@@ -18,14 +45,7 @@ function testElementStyle (t, element, styleSpec) {
 
 test("person creation", function (t) {
   // setup
-  var person = Person({
-    model: {
-      name: "Mikey Williams",
-      email: "dinosaur@example.com",
-      bio: "a human from planet earth",
-      image: fs.readFileSync(__dirname + "/ahdinosaur.jpeg")
-    },
-  });
+  var person = Person(mikey);
 
   // start app
   mercury.app(document.body, person.state, Person.render);
@@ -35,22 +55,15 @@ test("person creation", function (t) {
     var person = document.getElementsByClassName('person')[0];
 
     //test styles
-    testElementStyle(t, person, listItemMobile.person.style);
+    testElementStyle(t, person, listItemDesktop.person);
 
-    var image = person.childNodes[0];
+    var image = person.getElementsByClassName('image')[0];
     t.ok(image);
-    testElementStyle(t, image, listItemMobile.person.image.style);
+    testElementStyle(t, image, listItemDesktop.image);
 
-    var properties = person.childNodes[1];
-    t.ok(properties);
-    testElementStyle(t, properties, listItemMobile.person.properties.style)
-
-    var labels = properties.childNodes.map(function(node) {return node.childNodes[0]});
-    t.ok(labels);
-    labels.forEach(function(label) {
-      testElementStyle(t, label, listItemMobile.person.properties.label.style);
-    })
-
+    var name = person.getElementsByClassName('name')[0];
+    t.ok(name);
+    testElementStyle(t, name, listItemDesktop.name);
 
     // cleanup
     document.body.removeChild(person);

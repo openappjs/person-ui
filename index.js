@@ -1,58 +1,123 @@
-var debug = require('debug')('person-ui');
-var mercury = require('mercury');
-var h = mercury.h;
+//main
+var mercury           = require('mercury')
+ ,  h                 = mercury.h;
+
+//helpers
+var _                 = require('lodash')
+ ,  blackSwap         = require('./lib/black-list-swap')
+ ,  debug             = require('debug')('person-ui')
+ ,  mercuryBlackList  = ["name", "_diff", "_type", "_version"]
+ ,  keySwap           = require('key-swap');
+
+//renderers
+var renderA           = require('./lib/render-a')
+ ,  renderChildren    = require('./lib/render-children')
+ ,  renderInput       = require('./lib/render-input')
+ ,  renderImage       = require('./lib/render-image')
+ ,  renderP           = require('./lib/render-p');
 
 function Person (options) {
+  options = options || {};
+  var styleController = options.styleController;
+  var config = options.config || {};
+  var model;
+  var mercuryModel = {};
+  //TODO commands -> events
+  var commands = options.commands || {};
+  var parent = options.parent || {};
+  var children = options.children || [];
+  var view = options.view || {};
 
   // setup property state and events
   var eventNames = [];
-  var entityStruct = {};
   var editingStruct = {};
 
+  //de[json-ld]ify
+  if (config.id && config.id.key) {
+    model = keySwap(options.model, config.id.key, 'id')
+  } else {
+    model = options.model;
+  }
+
   Person.properties.forEach(function (propName) {
-    entityStruct["prop-"+propName] = mercury.value(options.model[propName]);
-    if (propName !== 'image') {
-      eventNames.push("change-"+propName);
-      editingStruct["prop-"+propName] = mercury.value(false);
-      eventNames.push("toggleEdit-"+propName);
+    mercuryModel[propName] = mercury.value(model[propName]);
+    switch (propName) {
+      case 'id':
+      case 'image':
+      case 'location':
+        break;
+      default:
+        eventNames.push("change-"+propName);
+        editingStruct["prop-"+propName] = mercury.value(false);
+        eventNames.push("toggleEdit-"+propName);
     }
   });
 
+  mercuryModel = blackSwap(mercuryModel, mercuryBlackList);
+  config = blackSwap(config, mercuryBlackList);
+
+  eventNames.push('click')
   var events = mercury.input(eventNames);
 
   // create state
   var state = mercury.struct({
-    //TODO select config from multiple options logic
-    config: mercury.struct(require('./styles/listItemMobile')),
-    entity: mercury.struct(entityStruct),
+    parent: mercury.struct(parent),
+    children: mercury.array(children),
+    commands: mercury.value(commands),
+    config: mercury.struct(config),
+    model: mercury.struct(mercuryModel),
     editing: mercury.struct(editingStruct),
+    styleController: mercury.value(styleController),
     events: events,
+    view: mercury.value(view),
     render: mercury.value(Person.render),
   });
 
+  state.events.click(function() {
+    state.view.set('profile')
+  })
+
   // define events
   Person.properties.forEach(function (propName) {
-    if (propName !== 'image' ) {
-      events["change-"+propName](
-        Person.changeProperty(propName, state)
-      );
-      events["toggleEdit-"+propName](
-        Person.toggleEditProperty(propName, state)
-      );
+    switch (propName) {
+      case 'id':
+      case 'image':
+      case 'location':
+        break;
+      default:
+        events["change-"+propName](
+          Person.changeProperty(propName, state)
+        );
+        events["toggleEdit-"+propName](
+          Person.toggleEditProperty(propName, state)
+        );
     }
-  })
+  });
 
   debug("setup", state());
 
   return { state: state, events: events };
 }
 
-Person.properties = ["name", "email", "bio", "image"];
+Person.properties = ["name", "handle", "email", "bio", "location", "image", "id"];
+
+Person.click = function (state) {
+  return function (data) {
+    state.commands.click(state)
+  }
+}
+
+
+Person.changeViewAs = function (view, state) {
+  return function (data) {
+    state.view.set(view)
+  }
+};
 
 Person.changeProperty = function (propName, state) {
   return function (data) {
     debug("changeProperty", propName, ":", data);
-    state.entity["prop-"+propName].set(data[name]);
+    state.entity["prop-"+propName].set(data[propName]);
   };
 };
 
@@ -63,47 +128,62 @@ Person.toggleEditProperty = function (propName, state) {
   };
 };
 
-Person.renderProperty = function (propName, state, events) {
-  var readOnly = !state.editing["prop-"+propName];
-
-  return h('div.property.prop-'+propName, {}, [
-    h('label', {
-      style: state.config.person.properties.label.style
-    }, propName),
-    h('input', {
-      type: "text",
-      name: propName,
-      value: state.entity["prop-"+propName],
-      readOnly: readOnly,
-      style: state.config.person.properties.input.style(propName, readOnly),
-      'ev-click': mercury.event(events["toggleEdit-"+propName]),
-      'ev-event': mercury.changeEvent(events["change-"+propName]),
-    }),
-  ]);
-};
-
-Person.renderImage = function (state, events) {
-  return h('img', {
-    src: state.entity['prop-image']
-  })
-};
-
 Person.render = function (state, events) {
   debug("render", state, events);
+  var style = state.styleController(state.parent, state.view),
+      elements = [];
+  
+  style = blackSwap(style, mercuryBlackList);
 
-  return h('div.ui.person', {
-    style: state.config.person.style
-  }, [
-    h('div.image', {
-      style: state.config.person.image.style
-    }, Person.renderImage(state, events)),
-    h('div.properties', {
-      style: state.config.person.properties.style
-    }, Person.properties.map(function (propName) {
-      if (propName !== 'image') { return Person.renderProperty(propName, state, state.events); }
-    })),
-  ])
-  ;
+  Person.properties.forEach(function(propName) {
+    var _propName = blackSwap(propName, mercuryBlackList);
+    var config = state.config[_propName];
+    var renderAs = config ? config.renderAs : null;
+
+    if (renderAs) {
+      var options = {
+        key: _propName,
+        value: state.model[_propName],
+        style: style,
+        className: config.className ? config.className : []
+      };
+      options.className.push('property', propName);
+      switch (renderAs) {
+        case 'input':
+          elements.push(renderInput(options));
+          break;
+        case 'img':
+          elements.push(renderImage(options));
+          break;
+        case 'p':
+          elements.push(renderP(options));
+          break;
+        case 'a':
+          elements.push(renderA(options));
+          break;
+        default:
+          elements.push(
+            h('p', { style: { display: 'none' } }, state.model[_propName] )
+          );
+          break;
+      }      
+    } else if (typeof state.model[_propName] === 'string') {
+      //assumes model value is string
+      elements.push(
+        h('p', { style: {display: 'none'} }, state.model[_propName] )
+      );
+    }
+  });
+
+  if (state.children.length > 0) renderChildren(elements, state.children);
+
+  return h('#_'+state.model.id+'.ui.person.'+state.view, 
+    {
+      style: style.person,
+      'ev-click': state.commands.click ? mercury.event(state.commands.click, {id: state.model.id }) : null
+    },
+    elements 
+  );
 };
 
 module.exports = Person;
