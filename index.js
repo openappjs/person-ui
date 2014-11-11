@@ -7,7 +7,7 @@ var _                 = require('lodash')
  ,  blackSwap         = require('./lib/black-list-swap')
  ,  debug             = require('debug')('person-ui')
  ,  mercuryBlackList  = ["name", "_diff", "_type", "_version"]
- ,  recurseKeySwap    = require('./lib/recurse-key-swap');
+ ,  keySwap           = require('key-swap');
 
 //renderers
 var renderA           = require('./lib/render-a')
@@ -33,9 +33,8 @@ function Person (options) {
   var editingStruct = {};
 
   //de[json-ld]ify
-  var id = config.id;
-  if (id.key) {
-    model = recurseKeySwap(options.model, config.id.key, 'id')
+  if (config.id && config.id.key) {
+    model = keySwap(options.model, config.id.key, 'id')
   } else {
     model = options.model;
   }

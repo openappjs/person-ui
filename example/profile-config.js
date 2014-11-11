@@ -1,6 +1,6 @@
 
 module.exports = {
-    id: {renderAs: null},
+    id: {renderAs: null, key: '@id'},
     handle: {renderAs: 'input', type: 'text'},
     name: {renderAs: 'input', type: 'text' },
     email: {

@@ -34,6 +34,7 @@
     "font-awesome": "^4.2.0",
     "geval": "^2.1.1",
     "is-array": "^1.0.1",
+    "key-swap": "0.0.2",
     "lodash": "^2.4.1",
     "mercury": "^6.0.1",
     "reduce": "^1.0.1"
