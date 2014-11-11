@@ -35,7 +35,8 @@
     "geval": "^2.1.1",
     "is-array": "^1.0.1",
     "lodash": "^2.4.1",
-    "mercury": "^6.0.1"
+    "mercury": "^6.0.1",
+    "reduce": "^1.0.1"
   },
   "devDependencies": {
     "atomify-css": "^3.2.0",

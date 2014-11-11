@@ -1,39 +1,27 @@
-var debug = require('debug')('person-ui');
-var mercury = require('mercury');
-var _ = require('lodash');
-var fs = require('fs'); 
-var renderChildren = require('./lib/render-children');
-var renderInput = require('./lib/render-input');
-var renderImage = require('./lib/render-image');
-var renderP     = require('./lib/render-p');
-var renderA     = require('./lib/render-a');
-var mercuryBlackList = ["name", "_diff", "_type", "_version"];
-var blackSwap = function(test, blackList) {
-  if (typeof test === 'object') {
-    var keys = Object.keys(test);
-    keys.forEach(function(key) {
-      if (blackList.indexOf(key) !== -1) {
-        test['_'+key] = test[key];
-        delete test[key]
-      }
-    });
-    return test;
-  } else {
-    if (blackList.indexOf(test) !== -1) {
-      return '_'+test;
-    } else {
-      return test;
-    }
-  }
-};
+//main
+var mercury           = require('mercury')
+ ,  h                 = mercury.h;
 
-var h = mercury.h;
+//helpers
+var _                 = require('lodash')
+ ,  blackSwap         = require('./lib/black-list-swap')
+ ,  debug             = require('debug')('person-ui')
+ ,  mercuryBlackList  = ["name", "_diff", "_type", "_version"]
+ ,  recurseKeySwap    = require('./lib/recurse-key-swap');
+
+//renderers
+var renderA           = require('./lib/render-a')
+ ,  renderChildren    = require('./lib/render-children')
+ ,  renderInput       = require('./lib/render-input')
+ ,  renderImage       = require('./lib/render-image')
+ ,  renderP           = require('./lib/render-p');
 
 function Person (options) {
   options = options || {};
   var styleController = options.styleController;
   var config = options.config || {};
-  var model = {};
+  var model;
+  var mercuryModel = {};
   //TODO commands -> events
   var commands = options.commands || {};
   var parent = options.parent || {};
@@ -44,8 +32,16 @@ function Person (options) {
   var eventNames = [];
   var editingStruct = {};
 
+  //de[json-ld]ify
+  var id = config.id;
+  if (id.key) {
+    model = recurseKeySwap(options.model, config.id.key, 'id')
+  } else {
+    model = options.model;
+  }
+
   Person.properties.forEach(function (propName) {
-    model[propName] = mercury.value(options.model[propName]);
+    mercuryModel[propName] = mercury.value(model[propName]);
     switch (propName) {
       case 'id':
       case 'image':
@@ -58,7 +54,7 @@ function Person (options) {
     }
   });
 
-  model = blackSwap(model, mercuryBlackList);
+  mercuryModel = blackSwap(mercuryModel, mercuryBlackList);
   config = blackSwap(config, mercuryBlackList);
 
   eventNames.push('click')
@@ -70,7 +66,7 @@ function Person (options) {
     children: mercury.array(children),
     commands: mercury.value(commands),
     config: mercury.struct(config),
-    model: mercury.struct(model),
+    model: mercury.struct(mercuryModel),
     editing: mercury.struct(editingStruct),
     styleController: mercury.value(styleController),
     events: events,
@@ -144,6 +140,7 @@ Person.render = function (state, events) {
     var _propName = blackSwap(propName, mercuryBlackList);
     var config = state.config[_propName];
     var renderAs = config ? config.renderAs : null;
+
     if (renderAs) {
       var options = {
         key: _propName,
@@ -151,7 +148,6 @@ Person.render = function (state, events) {
         style: style,
         className: config.className ? config.className : []
       };
-      console.log('options', options)
       options.className.push('property', propName);
       switch (renderAs) {
         case 'input':
@@ -168,7 +164,7 @@ Person.render = function (state, events) {
           break;
         default:
           elements.push(
-            h('p', { style: {display: 'none'} }, state.model[_propName] )
+            h('p', { style: { display: 'none' } }, state.model[_propName] )
           );
           break;
       }      
@@ -192,20 +188,3 @@ Person.render = function (state, events) {
 };
 
 module.exports = Person;
-
-  // [
-  //   // h('.image', {style: style.image}, Person.renderImage(state, state.events, style)),
-  //   // h('.properties', {style: style.properties}, Person.properties.map(function (propName) {
-  //   //   switch (propName) {
-  //   //     case 'id':
-  //   //     case 'image':
-  //   //       break;
-  //   //     case 'bio':
-  //   //       return Person.renderBio(state, state.events, style);
-  //   //     case 'location':
-  //   //       return Person.renderLocation(state, state.events, style);
-  //   //     default:
-  //   //       return Person.renderProperty(propName, state, state.events, style); 
-  //   //   }
-  //   // }))
-  // ]
