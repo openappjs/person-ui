@@ -45,6 +45,7 @@ function Person (options) {
       case 'id':
       case 'image':
       case 'location':
+      case 'memberships':
         break;
       default:
         eventNames.push("change-"+propName);
@@ -83,6 +84,7 @@ function Person (options) {
       case 'id':
       case 'image':
       case 'location':
+      case 'memberships':
         break;
       default:
         events["change-"+propName](
@@ -99,7 +101,16 @@ function Person (options) {
   return { state: state, events: events };
 }
 
-Person.properties = ["name", "handle", "email", "bio", "location", "image", "id"];
+Person.properties = [ 
+  "name", 
+  "handle", 
+  "email", 
+  "bio", 
+  "location", 
+  "image", 
+  "id", 
+  "memberships"
+];
 
 Person.click = function (state) {
   return function (data) {
