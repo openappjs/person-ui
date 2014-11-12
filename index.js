@@ -101,7 +101,7 @@ function Person (options) {
   return { state: state, events: events };
 }
 
-Person.properties = [
+Person.properties = [ 
   "name", 
   "handle", 
   "email", 
