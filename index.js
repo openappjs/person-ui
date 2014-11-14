@@ -7,7 +7,8 @@ var _                 = require('lodash')
  ,  blackSwap         = require('./lib/black-list-swap')
  ,  debug             = require('debug')('person-ui')
  ,  mercuryBlackList  = ["name", "_diff", "_type", "_version"]
- ,  keySwap           = require('key-swap');
+ ,  keySwap           = require('key-swap')
+ ,  nodeify           = require('./lib/entity-nodes');
 
 //renderers
 var renderA           = require('./lib/render-a')
@@ -145,6 +146,9 @@ Person.render = function (state, events) {
       elements = [];
   
   style = blackSwap(style, mercuryBlackList);
+
+  var graph = nodeify(state.model, ['location', 'memberships']);
+  console.log('graph', graph);
 
   Person.properties.forEach(function(propName) {
     var _propName = blackSwap(propName, mercuryBlackList);
