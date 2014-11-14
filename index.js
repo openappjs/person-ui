@@ -18,7 +18,7 @@ var renderA           = require('./lib/render-a')
  ,  renderP           = require('./lib/render-p');
 
 function Person (options) {
-  var options = options || {};
+  options = options || {};
   var styleController = options.styleController;
   var config = options.config || {};
   var model;

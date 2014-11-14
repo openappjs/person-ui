@@ -47,7 +47,7 @@ var mikey = {
       {
         "@id": "http://api.craftodex.enspiral.info/memberships/craftworks-mikey",
         "@type": "Membership",
-        description: "mad scientist".
+        description: "mad scientist",
         group: { "@id": "http://api.craftodex.enspiral.info/groups/craftworks" },
         startDate: "2014-04-28",
         role: [
@@ -56,6 +56,7 @@ var mikey = {
         ]
       }
     ],
+  },
   config: {
     id: { renderAs: null, key: '@id' },
     name: { renderAs: 'input' },
