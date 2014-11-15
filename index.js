@@ -180,6 +180,7 @@ Person.render = function (state, events) {
 		var _propName = blackSwap(propName, mercuryBlackList);
 		var config = state.config[_propName];
 		var renderAs = config ? config.renderAs : null;
+		var nodes = [];
 
 		if (renderAs) {
 			var options = {
@@ -190,6 +191,13 @@ Person.render = function (state, events) {
 			};
 			options.className.push('property', propName);
 			switch (renderAs) {
+				case 'edgeCollection':
+					var subgraph = options.value;
+					for (var i=0;i<subgraph.length;i++) {
+						var node = subgraph[i];
+						if (node.id) nodes.push(node);
+					}
+
 				case 'input':
 					elements.push(renderInput(options));
 					break;
