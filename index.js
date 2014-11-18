@@ -148,39 +148,11 @@ Person.render = function (state, events) {
 	
 	style = blackSwap(style, mercuryBlackList);
 
-	var graph = nodeify(state.model, ['location', 'memberships']);
-	console.log('graph', graph);
-
-	var g = new dagre.graphlib.Graph();
-	// Set an object for the graph label
-	g.setGraph({});
-	// Default to assigning a new object as a label for each new edge.
-	g.setDefaultEdgeLabel(function() { return {}; });
-
-	for (var i=0;i<graph.nodes.length;i++) {
-		var node = graph.nodes[i];
-		g.setNode(node.id, {label: null, width: 100, height: 100});
-	}
-
-	for (var i=0;i<graph.edges.length;i++) {
-		var edge = graph.edges[i];
-		g.setEdge(edge.from, edge.to);
-	}
-
-	dagre.layout(g);
-
-	g.nodes().forEach(function(v) {
-     console.log("Node " + v + ": " + JSON.stringify(g.node(v)));
-	});
-	g.edges().forEach(function(e) {
-	    console.log("Edge " + e.v + " -> " + e.w + ": " + JSON.stringify(g.edge(e)));
-	});
-
 	Person.properties.forEach(function(propName) {
-		var _propName = blackSwap(propName, mercuryBlackList);
-		var config = state.config[_propName];
-		var renderAs = config ? config.renderAs : null;
-		var nodes = [];
+		var _propName = blackSwap(propName, mercuryBlackList)
+		 ,	config = state.config[_propName]
+		 , 	renderAs = config ? config.renderAs : null
+		 , 	predicates = [];
 
 		if (renderAs) {
 			var options = {
@@ -191,13 +163,9 @@ Person.render = function (state, events) {
 			};
 			options.className.push('property', propName);
 			switch (renderAs) {
-				case 'edgeCollection':
-					var subgraph = options.value;
-					for (var i=0;i<subgraph.length;i++) {
-						var node = subgraph[i];
-						if (node.id) nodes.push(node);
-					}
+				case 'nodes':
 
+					break;
 				case 'input':
 					elements.push(renderInput(options));
 					break;
@@ -223,6 +191,27 @@ Person.render = function (state, events) {
 			);
 		}
 	});
+
+	var graph = nodeify(state.model, ['location', 'memberships']);
+	console.log('graph', graph);
+
+	var g = new dagre.graphlib.Graph();
+	// Set an object for the graph label
+	g.setGraph({});
+	// Default to assigning a new object as a label for each new edge.
+	g.setDefaultEdgeLabel(function() { return {}; });
+
+	for (var i=0;i<graph.nodes.length;i++) {
+		var node = graph.nodes[i];
+		g.setNode(node.id, {label: null, width: 100, height: 100});
+	}
+
+	for (var i=0;i<graph.edges.length;i++) {
+		var edge = graph.edges[i];
+		g.setEdge(edge.from, edge.to);
+	}
+
+	dagre.layout(g);
 
 	if (state.children.length > 0) renderChildren(elements, state.children);
 
