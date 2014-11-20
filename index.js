@@ -8,7 +8,7 @@ var _                 = require('lodash')
  ,  debug             = require('debug')('person-ui')
  ,  mercuryBlackList  = ["name", "_diff", "_type", "_version"]
  ,  keySwap           = require('key-swap')
- ,  nodeify           = require('./lib/entity-nodes')
+ ,  graphify           = require('./lib/entity-nodes')
  , 	dagre							= require('dagre');
 
 //renderers
@@ -163,8 +163,8 @@ Person.render = function (state, events) {
 			};
 			options.className.push('property', propName);
 			switch (renderAs) {
-				case 'nodes':
-
+				case 'edge':
+					predicates.push(propName);
 					break;
 				case 'input':
 					elements.push(renderInput(options));
@@ -192,26 +192,33 @@ Person.render = function (state, events) {
 		}
 	});
 
-	var graph = nodeify(state.model, ['location', 'memberships']);
-	console.log('graph', graph);
+	if (predicates.length > 0) {
 
-	var g = new dagre.graphlib.Graph();
-	// Set an object for the graph label
-	g.setGraph({});
-	// Default to assigning a new object as a label for each new edge.
-	g.setDefaultEdgeLabel(function() { return {}; });
+		var data = graphify(state.model, predicates);
+		console.log('graph', data);
 
-	for (var i=0;i<graph.nodes.length;i++) {
-		var node = graph.nodes[i];
-		g.setNode(node.id, {label: null, width: 100, height: 100});
+		var g = new dagre.graphlib.Graph();
+		// Set an object for the graph label
+		g.setGraph({});
+		// Default to assigning a new object as a label for each new edge.
+		g.setDefaultEdgeLabel(function() { return {}; });
+
+		for (var i=0;i<data.nodes.length;i++) {
+			var node = data.nodes[i];
+			g.setNode(node.id, {label: null, width: 100, height: 100});
+		}
+
+		for (var i=0;i<data.edges.length;i++) {
+			var edge = data.edges[i];
+			g.setEdge(edge.from, edge.to);
+		}
+
+		dagre.layout(g);
+
+		
 	}
 
-	for (var i=0;i<graph.edges.length;i++) {
-		var edge = graph.edges[i];
-		g.setEdge(edge.from, edge.to);
-	}
 
-	dagre.layout(g);
 
 	if (state.children.length > 0) renderChildren(elements, state.children);
 
