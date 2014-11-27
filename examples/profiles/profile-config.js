@@ -1,4 +1,3 @@
-
 module.exports = {
     id: {renderAs: null, key: '@id'},
     handle: {renderAs: 'input', type: 'text'},

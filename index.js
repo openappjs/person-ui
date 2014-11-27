@@ -8,15 +8,12 @@ var _                 = require('lodash')
  ,  debug             = require('debug')('person-ui')
  ,  mercuryBlackList  = ["name", "_diff", "_type", "_version"]
  ,  keySwap           = require('key-swap')
- ,  graphify           = require('./lib/entity-nodes')
- , 	dagre							= require('dagre');
+ ,  graphify          = require('./lib/entity-nodes')
+ , 	dagre							= require('dagre')
+ ,	Promise						= require('bluebird')
+ ,	renderElements 		= require('./lib/render/render-elements')
+ ,	render 						= require('./lib/render/index');
 
-//renderers
-var renderA           = require('./lib/render-a')
- ,  renderChildren    = require('./lib/render-children')
- ,  renderInput       = require('./lib/render-input')
- ,  renderImage       = require('./lib/render-image')
- ,  renderP           = require('./lib/render-p');
 
 function Person (options) {
 	options = options || {};
@@ -101,7 +98,7 @@ function Person (options) {
 	debug("setup", state());
 
 	return { state: state, events: events };
-}
+};
 
 Person.properties = [ 
 	"name", 
@@ -118,8 +115,7 @@ Person.click = function (state) {
 	return function (data) {
 		state.commands.click(state)
 	}
-}
-
+};
 
 Person.changeViewAs = function (view, state) {
 	return function (data) {
@@ -143,55 +139,35 @@ Person.toggleEditProperty = function (propName, state) {
 
 Person.render = function (state, events) {
 	debug("render", state, events);
-	var style = state.styleController(state.parent, state.view),
-		elements = [];
-	
+	var style 			= state.styleController(state.parent, state.view)
+	 ,	config 			= state.config
+	 , 	predicates 	= [];
+
+
+
+
+	var	click 			= state.commands.click
+		 	? mercury.event(state.commands.click, {id: state.model.id }) 
+		 	: null
+
+	var tag = (state.config.ui && state.config.ui.renderAs) ? state.config.ui.renderAs : 'div';
+
 	style = blackSwap(style, mercuryBlackList);
+	var r = renderElements(state.model, config, style);
+	var elements = Object.keys(state.model).map(r);
+	var UiOptions = {
+			style: style.person,
+			'ev-click': click
+	};
 
-	Person.properties.forEach(function(propName) {
-		var _propName = blackSwap(propName, mercuryBlackList)
-		 ,	config = state.config[_propName]
-		 , 	renderAs = config ? config.renderAs : null
-		 , 	predicates = [];
+	
+	if (state.view === 'graph') {
+		predicates = Object.keys(config)
+			.filter(function (key) { return (config[key].renderAs && config[key].renderAs === 'edge') });
+		console.log('predicates if', predicates)
+	}
 
-		if (renderAs) {
-			var options = {
-				key: _propName,
-				value: state.model[_propName],
-				style: style,
-				className: config.className ? config.className : []
-			};
-			options.className.push('property', propName);
-			switch (renderAs) {
-				case 'edge':
-					predicates.push(propName);
-					break;
-				case 'input':
-					elements.push(renderInput(options));
-					break;
-				case 'img':
-					elements.push(renderImage(options));
-					break;
-				case 'p':
-					elements.push(renderP(options));
-					break;
-				case 'a':
-					elements.push(renderA(options));
-					break;
-				default:
-					elements.push(
-						h('p', { style: { display: 'none' } }, state.model[_propName] )
-					);
-					break;
-			}      
-		} else if (typeof state.model[_propName] === 'string') {
-			//assumes model value is string
-			elements.push(
-				h('p', { style: {display: 'none'} }, state.model[_propName] )
-			);
-		}
-	});
-
+	console.log('predicates', predicates)
 	if (predicates.length > 0) {
 
 		var data = graphify(state.model, predicates);
@@ -204,8 +180,12 @@ Person.render = function (state, events) {
 		g.setDefaultEdgeLabel(function() { return {}; });
 
 		for (var i=0;i<data.nodes.length;i++) {
-			var node = data.nodes[i];
-			g.setNode(node.id, {label: null, width: 100, height: 100});
+			var node 		= data.nodes[i]
+			 ,	size 		= style[node.type]
+			 ,	width 	= size.width || 100 
+			 , 	height 	=	size.height	|| 100;
+
+			g.setNode(node.id, { label: null, width: width, height: height });
 		}
 
 		for (var i=0;i<data.edges.length;i++) {
@@ -215,18 +195,18 @@ Person.render = function (state, events) {
 
 		dagre.layout(g);
 
-		
+		g.nodes().forEach(function (node) {
+			console.log('node', node)
+		})		
 	}
 
+	if (state.children.length > 0) render.children(elements, state.children);
 
+	console.log('....', tag, UiOptions, elements)
 
-	if (state.children.length > 0) renderChildren(elements, state.children);
-
-	return h('#_'+state.model.id+'.ui.person.'+state.view, 
-		{
-			style: style.person,
-			'ev-click': state.commands.click ? mercury.event(state.commands.click, {id: state.model.id }) : null
-		},
+	return h(
+		tag+'#_'+state.model.id+'.ui.person.'+state.view, 
+		UiOptions,
 		elements 
 	);
 };

@@ -4,17 +4,16 @@
   "description": "person user interface",
   "main": "index.js",
   "scripts": {
-    "serve-profiles": "beefy -p 5000 examples/profiles/app.js:bundle.js --index example/profiles/index.html",
-    "serve-graph":  "beefy -p 5000 examples/graph/app.js:bundle.js --index example/graph/index.html",
+    "serve-profiles": "beefy -p 5000 examples/profiles/app.js:bundle.js --index examples/profiles/index.html",
+    "serve-graph": "beefy -p 5000 examples/graph/app.js:bundle.js --index examples/graph/index.html",
     "config": "node examples/profiles/config.js & node examples/graph/config.js",
     "profiles": "npm run config && npm run serve-profiles",
-    "graph": "npm run cofig && npm run serve-graph",
+    "graph": "npm run config && npm run serve-graph",
     "test": "node test/index.js"
   },
   "browserify": {
     "transform": [
       "cssify",
-      "brfs",
       "envify"
     ]
   },
@@ -40,7 +39,10 @@
     "key-swap": "0.0.2",
     "lodash": "^2.4.1",
     "mercury": "^6.0.1",
-    "reduce": "^1.0.1"
+    "reduce": "^1.0.1",
+    "bluebird": "~2.3.11",
+    "highland": "~2.0.0",
+    "node-stringify": "0.0.18"
   },
   "devDependencies": {
     "atomify-css": "^3.2.0",

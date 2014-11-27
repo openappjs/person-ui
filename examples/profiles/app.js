@@ -1,16 +1,15 @@
 var mercury = require('mercury');
 
 var Aviator = require('aviator');
-var fs = require('fs');
 var domready = require('domready');
 
 //components
-var Person = require('../');
+var Person = require('../../');
 var Icon = require('mercury-fa');
 
 //require preprocessed styles
 require('./bundle.css');
-require('../index.css');
+require('../../index.css');
 
 //bootstrap child component
 var icon = Icon({
@@ -67,7 +66,7 @@ var mikey = {
     location: { renderAs: null }
   },
   children: [icon],
-  styleController: require('../style-controller'),
+  styleController: require('../../style-controller'),
   view: 'list-item'
 }
 

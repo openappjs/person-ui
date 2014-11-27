@@ -1,16 +1,15 @@
 var mercury = require('mercury');
 
 var Aviator = require('aviator');
-var fs = require('fs');
 var domready = require('domready');
 
 //components
-var Person = require('../');
+var Person = require('../../');
 var Icon = require('mercury-fa');
 
 //require preprocessed styles
 require('./bundle.css');
-require('../index.css');
+require('../../index.css');
 
 //bootstrap child component
 var icon = Icon({
@@ -67,22 +66,22 @@ var mikey = {
     location: { renderAs: null }
   },
   children: [icon],
-  styleController: require('../style-controller'),
+  styleController: require('../../style-controller'),
   view: 'list-item'
 };
 
 //entity-data
-var [
+var entities = [
   { id: "http://api.craftodex.enspiral.info/groups/craftworks", name: 'Craftworks' },
   { id: "http://sws.geonames.org/5332921/", name: 'California' },
   { id: "http://sws.geonames.org/2186224/", name: 'New Zealand' }
-]
+];
 
 
 var GraphTarget = {
   render: function (req) {
-    mikey.config = require('./profile-config');
-    mikey.view = 'profile';
+    mikey.config = require('./graph-config');
+    mikey.view = 'graph';
     mikey.children.length  = 0;
     var personProfile = Person(mikey)
     var elem = document.getElementById('_'+mikey.model.id);
@@ -96,7 +95,7 @@ var GraphTarget = {
 Aviator.pushStateEnabled = true;
 Aviator.setRoutes({
   '/people': {
-    target: ProfileTarget,
+    target: GraphTarget,
       '/:id': {
         '/*': 'render'
       }

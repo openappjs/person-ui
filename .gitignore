@@ -1,6 +1,7 @@
 node_modules
 npm-debug.log
-example/bundle.css
+example/*/bundle.css
+example/*/bundle.js
 example/assets
 
 .DS_Store
