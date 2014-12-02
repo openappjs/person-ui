@@ -1,6 +1,7 @@
 //main
 var mercury           = require('mercury')
- ,  h                 = mercury.h;
+ ,  h                 = mercury.h
+ , 	svg 							= mercury.svg;
 
 //helpers
 var _                 = require('lodash')
@@ -14,6 +15,8 @@ var _                 = require('lodash')
  ,	renderElements 		= require('./lib/render/render-elements')
  ,	render 						= require('./lib/render/index');
 
+var circle = require('./lib/render/render-svg-circle');
+var layout = require('./lib/layout-graph');
 
 function Person (options) {
 	options = options || {};
@@ -141,16 +144,16 @@ Person.render = function (state, events) {
 	debug("render", state, events);
 	var style 			= state.styleController(state.parent, state.view)
 	 ,	config 			= state.config
-	 , 	predicates 	= [];
-
-
-
+	 , 	predicates 	= []
+	 ,	g;
 
 	var	click 			= state.commands.click
 		 	? mercury.event(state.commands.click, {id: state.model.id }) 
 		 	: null
 
-	var tag = (state.config.ui && state.config.ui.renderAs) ? state.config.ui.renderAs : 'div';
+	var tag = (state.config.ui && state.config.ui.renderAs) 
+			? state.config.ui.renderAs 
+			: 'div';
 
 	style = blackSwap(style, mercuryBlackList);
 	var r = renderElements(state.model, config, style);
@@ -160,49 +163,43 @@ Person.render = function (state, events) {
 			'ev-click': click
 	};
 
-	
 	if (state.view === 'graph') {
 		predicates = Object.keys(config)
 			.filter(function (key) { return (config[key].renderAs && config[key].renderAs === 'edge') });
-		console.log('predicates if', predicates)
+	
+		g = layout(state.model, style, predicates);
+		console.log('g', g)
+
+		UiOptions.width = g.graph().width;
+		UiOptions.height = g.graph().height;
+
+		g.nodes().forEach(function (n) {
+			var node = g.node(n);
+			var options = {
+				attrs: {
+					cx: String(node.x),
+					cy: String(node.y),
+					r: String(node.height/2)
+				}
+			}
+			console.log(options)
+			var c = circle(options);
+			console.log(c)
+			elements.push(c)
+		})
 	}
 
-	console.log('predicates', predicates)
-	if (predicates.length > 0) {
-
-		var data = graphify(state.model, predicates);
-		console.log('graph', data);
-
-		var g = new dagre.graphlib.Graph();
-		// Set an object for the graph label
-		g.setGraph({});
-		// Default to assigning a new object as a label for each new edge.
-		g.setDefaultEdgeLabel(function() { return {}; });
-
-		for (var i=0;i<data.nodes.length;i++) {
-			var node 		= data.nodes[i]
-			 ,	size 		= style[node.type]
-			 ,	width 	= size.width || 100 
-			 , 	height 	=	size.height	|| 100;
-
-			g.setNode(node.id, { label: null, width: width, height: height });
-		}
-
-		for (var i=0;i<data.edges.length;i++) {
-			var edge = data.edges[i];
-			g.setEdge(edge.from, edge.to);
-		}
-
-		dagre.layout(g);
-
-		g.nodes().forEach(function (node) {
-			console.log('node', node)
-		})		
-	}
 
 	if (state.children.length > 0) render.children(elements, state.children);
+	console.log('UiOptions', UiOptions)
 
-	console.log('....', tag, UiOptions, elements)
+	if (tag === 'svg') {
+		return svg(
+			tag+'#_'+state.model.id+'.ui.person.'+state.view, 
+			UiOptions,
+			elements 
+		);
+	}
 
 	return h(
 		tag+'#_'+state.model.id+'.ui.person.'+state.view, 
